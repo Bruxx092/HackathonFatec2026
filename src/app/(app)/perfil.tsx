@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, Text } from "react-native";
 
 import { Button, Card } from "@/components";
+import { deslogar } from "@/services/auth";
 import { usuariosMock } from "@/services/mocks/usuarios";
 import { colors, typography } from "@/theme";
 
@@ -9,6 +10,13 @@ const usuario = usuariosMock[0];
 
 export default function Perfil() {
   const router = useRouter();
+
+  async function handleSair() {
+    try {
+      await deslogar();
+    } catch {}
+    router.replace("/login");
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -26,7 +34,7 @@ export default function Perfil() {
         <Text style={styles.valor}>{usuario.unidade}</Text>
       </Card>
 
-      <Button label="Sair" variant="outline" onPress={() => router.replace("/login")} />
+      <Button label="Sair" variant="outline" onPress={handleSair} />
     </ScrollView>
   );
 }

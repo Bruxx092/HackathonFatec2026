@@ -30,35 +30,22 @@ export default function AppLayout() {
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} />,
         }}
       />
-
-      {/* Rota principal de Avisos */}
       <Tabs.Screen
-        name="avisos/index"
+        name="avisos"
         options={{
           href: null,
           headerShown: false,
         }}
       />
-
-      {/* Ocultar a rota de detalhe [id] da barra de abas inferior */}
       <Tabs.Screen
-        name="avisos/[id]"
-        options={{
-          href: null, // Oculta o botão da aba inferior
-          title: "Detalhe do Aviso",
-        }}
-      />
-
-      <Tabs.Screen
-        name="agenda/index"
+        name="agenda"
         options={{
           title: "Agenda",
           tabBarIcon: ({ color, size }) => <Ionicons name="calendar-outline" color={color} size={size} />,
         }}
       />
-
       <Tabs.Screen
-        name="fala-fatec/index"
+        name="fala-fatec"
         options={{
           title: "Fala Fatec",
           headerShown: false,
@@ -67,7 +54,6 @@ export default function AppLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="perfil"
         options={{

@@ -37,9 +37,10 @@ Divisão de trabalho para o hackathon: **3 pessoas · 4 horas** (2 frontend + 1 
 
 ### T2 — Integração (~45min)
 
-1. Trocar os mocks pelo Firebase na camada de services (assinatura preservada), na ordem: **Auth → Avisos**.
-2. O chat do Fala Fatec permanece simulado nesta versão (tempo real é evolução).
-3. Backend em estabilização e correção de bugs.
+1. Auth já integrado (Firebase Auth + perfil na coleção `users` do Firestore, com seed de demonstração).
+2. Trocar os mocks pela implementação Firebase na camada de services, na ordem: **Avisos → Conversas** (a assinatura não muda).
+3. O chat do Fala Fatec permanece simulado nesta versão (tempo real é evolução).
+4. Backend em estabilização e correção de bugs.
 
 ### T3 — Demo (~15min)
 
@@ -50,21 +51,23 @@ Divisão de trabalho para o hackathon: **3 pessoas · 4 horas** (2 frontend + 1 
 
 Tela pronta = navega com os mocks + estilos do `src/theme.ts` → merge imediato na `develop`, sem PR formal.
 
-## Contas de demonstração (mocks)
+## Contas de demonstração (seed no Firebase)
 
-| Papel | E-mail |
-| --- | --- |
-| Estudante | ana.souza@fatec.sp.gov.br |
-| Professor | carlos.henrique@fatec.sp.gov.br |
-| Coordenador | coordenacao.dsm@fatec.sp.gov.br |
+| Papel | E-mail | Senha |
+| --- | --- | --- |
+| Estudante | estudante@fatec.sp.gov.br | 123456 |
+| Professor | professor@fatec.sp.gov.br | 123456 |
+| Coordenador | coordenador@fatec.sp.gov.br | 123456 |
 
-Senha: qualquer valor com 4+ caracteres (validação mock).
+O seed (`src/seeds/seed.ts`) cria as contas no Firebase Auth e os perfis na coleção `users`. Em desenvolvimento, o botão "Popular usuários de demonstração" aparece na tela de login; ele exige as variáveis `EXPO_PUBLIC_FIREBASE_*`.
 
 ## Contrato de services (não mudar assinatura)
 
 | Serviço | Funções |
 | --- | --- |
-| `services/auth.ts` | `entrar(email, senha)`, `isEmailInstitucional(email)` |
+| `services/auth.ts` | `entrar(loginData: LoginDTO)`, `deslogar()`, `isEmailInstitucional(email)` |
+| `types/dtos.ts` | `LoginDTO`, `UserDTO`, `validateLoginDTO(dados)`, `mapUserDocumentToEntity(id, doc)` |
+| `seeds/seed.ts` | `rodarSeedsUsuarios()` — cria as contas e perfis de demonstração |
 | `services/avisos.ts` | `listarAvisos(filtro, contexto)`, `obterAviso(id)`, `contarNaoLidos(contexto)`, `marcarComoLido(id)`, `marcarTodosComoLidos()` |
 | `services/eventos.ts` | `listarEventos()` |
 | `services/conversas.ts` | `listarResumos()`, `obterConversa(id)`, `listarMensagens(conversaId)`, `enviarMensagem(conversaId, autorId, texto)`, `responderAutomatico(conversaId)`, `obterConversaComPessoa(pessoaId, usuarioId)` |

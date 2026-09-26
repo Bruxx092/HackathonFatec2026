@@ -1,59 +1,46 @@
-import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Alert
-} from "react-native";
+import { useState } from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Button, Input } from "@/components";
+import { rodarSeedsUsuarios } from "@/seeds/seed";
 import { entrar } from "@/services/auth";
 import { colors, typography } from "@/theme";
-import { rodarSeedsUsuarios } from "@/seeds/seed";
-
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState<string | null>(null);
+  const [mensagem, setMensagem] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
-
-
   const [carregandoSeed, setCarregandoSeed] = useState(false);
 
-  const handleRodarSeed = async () => {
-    try {
-      setCarregandoSeed(true);
-      const resultado = await rodarSeedsUsuarios();
-      Alert.alert("Resultado do Seed", resultado);
-    } catch (error: any) {
-      Alert.alert("Erro ao rodar seed", error.message);
-    } finally {
-      setCarregandoSeed(false);
-    }
-  };
   async function handleEntrar() {
     setErro(null);
+    setMensagem(null);
+    setCarregando(true);
     try {
-      setCarregando(true);
-
-      const usuario = await entrar({ email, senha });
-
-      // Redirecionamento condicional por papel de usuário (Role-based Routing)
-      if (usuario.tipoUsuario === "professor" || usuario.tipoUsuario === "coordenador") {
-        router.replace("/(app)/home");
-      } else {
-        router.replace("/(app)/home");
-      }
-    } catch (error: any) {
-      setErro(error.message || "Não foi possível realizar o login.");
+      await entrar({ email, senha });
+      router.replace("/home");
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Não foi possível realizar o login.");
     } finally {
       setCarregando(false);
+    }
+  }
+
+  async function handleRodarSeed() {
+    setErro(null);
+    setMensagem(null);
+    setCarregandoSeed(true);
+    try {
+      const resultado = await rodarSeedsUsuarios();
+      setMensagem(resultado);
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Erro ao popular usuários de demonstração.");
+    } finally {
+      setCarregandoSeed(false);
     }
   }
 
@@ -88,6 +75,7 @@ export default function Login() {
           />
 
           {erro ? <Text style={styles.erro}>{erro}</Text> : null}
+          {mensagem ? <Text style={styles.mensagem}>{mensagem}</Text> : null}
 
           <Button
             label={carregando ? "Entrando..." : "Entrar"}
@@ -95,16 +83,21 @@ export default function Login() {
             disabled={carregando}
             testID="login-entrar"
           />
+
+          {__DEV__ ? (
+            <View style={styles.seed}>
+              <Button
+                label={carregandoSeed ? "Populando..." : "Popular usuários de demonstração"}
+                variant="outline"
+                onPress={handleRodarSeed}
+                disabled={carregandoSeed}
+                testID="login-seed"
+              />
+            </View>
+          ) : null}
         </View>
 
         <Text style={styles.rodape}>Hackathon Fatec 2026 · Itaquera</Text>
-        {/* <View style={{ marginTop: 16 }}>
-        <Button
-          label={carregandoSeed ? "Gerando Usuários..." : "⚡ População Dev (Seed)"}
-          onPress={handleRodarSeed}
-          disabled={carregandoSeed}
-        />
-      </View> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -144,6 +137,15 @@ const styles = StyleSheet.create({
     fontSize: typography.size.body,
     color: colors.feedback.canceled,
     marginBottom: 12,
+  },
+  mensagem: {
+    fontFamily: typography.family.regular,
+    fontSize: typography.size.body,
+    color: colors.blue,
+    marginBottom: 12,
+  },
+  seed: {
+    marginTop: 16,
   },
   rodape: {
     fontFamily: typography.family.regular,

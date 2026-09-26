@@ -83,7 +83,17 @@ Variáveis de ambiente (opcional nesta versão): em *Project Settings → Enviro
 
 ## Login
 
-O acesso usa o e-mail institucional da Fatec (conta Microsoft, domínio `@fatec.sp.gov.br`) com senha. O botão "Entrar com conta Microsoft" (OAuth via Firebase Auth) está previsto como evolução.
+O acesso usa o e-mail institucional (`@fatec.sp.gov.br`) com senha, autenticado pelo **Firebase Auth**. Depois do login, o perfil acadêmico é lido da coleção `users` do Firestore.
+
+**Usuários de demonstração** (criados pelo seed):
+
+| Papel | E-mail | Senha |
+| --- | --- | --- |
+| Estudante | estudante@fatec.sp.gov.br | 123456 |
+| Professor | professor@fatec.sp.gov.br | 123456 |
+| Coordenador | coordenador@fatec.sp.gov.br | 123456 |
+
+Em desenvolvimento aparece o botão **"Popular usuários de demonstração"** na tela de login, que cria essas contas no Firebase (requer as variáveis `EXPO_PUBLIC_FIREBASE_*`). O botão "Entrar com conta Microsoft" (OAuth via Firebase Auth) está previsto como evolução.
 
 ## Diferencial — Acessibilidade
 

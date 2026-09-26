@@ -190,6 +190,8 @@ Botão Entrar.
 
 Validação do domínio institucional no cadastro.
 
+Autenticação pelo Firebase Auth e leitura do perfil acadêmico na coleção `users` do Firestore.
+
 Opção visual de recuperação de senha.
 
 Evolução futura: botão “Entrar com conta Microsoft” (OAuth Microsoft via Firebase Auth).

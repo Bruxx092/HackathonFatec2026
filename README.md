@@ -66,6 +66,21 @@ npm install
 npx expo start
 ```
 
+## Deploy na Vercel
+
+O app é publicado na Vercel como build web estático do Expo Router (pasta `dist/`), já configurado em `vercel.json`.
+
+**Pelo dashboard:** importe o repositório em vercel.com. O `vercel.json` define o build (`npx expo export --platform web --output-dir dist`), o diretório de saída e o rewrite de SPA (para que rotas como `/avisos` funcionem ao recarregar).
+
+**Pela CLI:**
+
+```bash
+npx vercel        # deploy de preview
+npx vercel --prod # deploy de produção
+```
+
+Variáveis de ambiente (opcional nesta versão): em *Project Settings → Environment Variables*, adicione as `EXPO_PUBLIC_FIREBASE_*` (veja `.env.example`). Sem elas o app roda com os dados de demonstração em `src/services/mocks/`.
+
 ## Login
 
 O acesso usa o e-mail institucional da Fatec (conta Microsoft, domínio `@fatec.sp.gov.br`) com senha. O botão "Entrar com conta Microsoft" (OAuth via Firebase Auth) está previsto como evolução.

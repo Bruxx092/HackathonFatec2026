@@ -324,6 +324,18 @@ Oferece Security Rules para aplicar os papéis e escopos de publicação no banc
 
 Pode ser substituído futuramente por uma API própria se o projeto crescer.
 
+## 6.4 Identidade visual
+
+A identidade do FatecON deriva da marca do Centro Paula Souza (CPS), usando os tokens oficiais do Guia de Estilo Digital CPS.
+
+Paleta principal: vermelho institucional #B20000 (marca, botões e badge OFICIAL), azul #005C6D (links e destaques), cinza #666666 (texto), superfícies #F8F8F8 e fundo #FFFFFF. Status do Fala Fatec usam as cores de feedback do guia (#D32719, #B78718, #3ACF1F).
+
+Tipografia: Montserrat (400 para corpo, 600 para subtítulos e botões, 800 para títulos e wordmark).
+
+Wordmark: FatecON, com "Fatec" em preto e "ON" em vermelho. O ícone do app e a splash usam o "ON" em vermelho sobre fundo branco.
+
+O detalhamento (paleta completa, contrastes WCAG, formas e aplicação no código) está em docs/identidade-visual.md.
+
 # 7. Arquitetura Inicial
 
 | Aplicativo React Native → Serviços/API → Firebase (Auth + Cloud Firestore) |

@@ -1,3 +1,5 @@
+![FatecON](./docs/assets/banner.svg)
+
 # FatecON
 
 **Sua Fatec. Tudo conectado.**
@@ -6,7 +8,8 @@ Aplicativo mobile para melhorar a comunicação do estudante na Fatec Itaquera -
 
 ## Documentação
 
-A especificação completa do projeto está em [`FatecON_Documento_Completo_Projeto_Hackathon.md`](./FatecON_Documento_Completo_Projeto_Hackathon.md).
+- Especificação completa: [`FatecON_Documento_Completo_Projeto_Hackathon.md`](./FatecON_Documento_Completo_Projeto_Hackathon.md)
+- Identidade visual: [`docs/identidade-visual.md`](./docs/identidade-visual.md)
 
 ## Papéis e escopo de publicação
 

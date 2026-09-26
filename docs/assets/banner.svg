@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240">
+  <rect width="1000" height="240" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="1000" height="8" fill="#B20000"/>
+  <text x="500" y="118" text-anchor="middle" dominant-baseline="central" font-family="Montserrat, Helvetica, Arial, sans-serif" font-weight="800" font-size="104" fill="#000000">Fatec<tspan fill="#B20000">ON</tspan></text>
+  <text x="500" y="182" text-anchor="middle" dominant-baseline="central" font-family="Montserrat, Helvetica, Arial, sans-serif" font-weight="400" font-size="30" fill="#666666">Sua Fatec. Tudo conectado.</text>
+</svg>

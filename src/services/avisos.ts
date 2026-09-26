@@ -9,6 +9,8 @@ export interface ContextoUsuario {
   turma?: string;
 }
 
+const lidosNaSessao = new Set<string>();
+
 export async function listarAvisos(
   filtro: AvisoFiltro = "todos",
   contexto: ContextoUsuario = {},
@@ -36,4 +38,19 @@ export async function listarAvisos(
 export async function obterAviso(id: string): Promise<Aviso | undefined> {
   await delay(150);
   return avisosMock.find((aviso) => aviso.id === id);
+}
+
+export async function contarNaoLidos(contexto: ContextoUsuario = {}): Promise<number> {
+  const avisos = await listarAvisos("todos", contexto);
+  return avisos.filter((aviso) => !aviso.lido && !lidosNaSessao.has(aviso.id)).length;
+}
+
+export function marcarComoLido(id: string): void {
+  lidosNaSessao.add(id);
+}
+
+export function marcarTodosComoLidos(): void {
+  for (const aviso of avisosMock) {
+    lidosNaSessao.add(aviso.id);
+  }
 }

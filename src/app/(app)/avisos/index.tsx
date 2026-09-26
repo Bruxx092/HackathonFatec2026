@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 
 import { BadgeOficial, Card } from "@/components";
-import { listarAvisos, type AvisoFiltro } from "@/services/avisos";
+import { listarAvisos, marcarTodosComoLidos, type AvisoFiltro } from "@/services/avisos";
 import { colors, radii, typography } from "@/theme";
 import type { Aviso } from "@/types";
 
@@ -24,6 +24,10 @@ export default function Avisos() {
   useEffect(() => {
     listarAvisos(filtro, contexto).then(setAvisos);
   }, [filtro]);
+
+  useEffect(() => {
+    marcarTodosComoLidos();
+  }, []);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>

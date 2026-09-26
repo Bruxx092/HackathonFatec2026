@@ -12,6 +12,7 @@ export const avisosMock: Aviso[] = [
     curso: "Desenvolvimento de Software Multiplataforma",
     autor: "Coord. Mariana Lopes",
     dataPublicacao: "2026-09-24T13:00:00.000Z",
+    lido: false,
   },
   {
     id: "a2",
@@ -25,6 +26,7 @@ export const avisosMock: Aviso[] = [
     turma: "dsm-3-tarde",
     autor: "Prof. Carlos Henrique",
     dataPublicacao: "2026-09-26T11:30:00.000Z",
+    lido: false,
   },
   {
     id: "a3",
@@ -36,6 +38,7 @@ export const avisosMock: Aviso[] = [
     origem: "institucional",
     autor: "Secretaria Acadêmica",
     dataPublicacao: "2026-09-22T09:00:00.000Z",
+    lido: true,
   },
   {
     id: "a4",
@@ -47,5 +50,6 @@ export const avisosMock: Aviso[] = [
     origem: "institucional",
     autor: "Assessoria de Comunicação",
     dataPublicacao: "2026-09-20T15:00:00.000Z",
+    lido: false,
   },
 ];

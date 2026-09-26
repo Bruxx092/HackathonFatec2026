@@ -7,8 +7,9 @@ Divisão de trabalho para o hackathon: **3 pessoas · 4 horas** (2 frontend + 1 
 | Decisão | Definição |
 | --- | --- |
 | Fundação compartilhada | Feita antes do trabalho paralelo, por um dev (~30min) |
-| Divisão das telas | Front A: Login + Home + Perfil · Front B: Avisos + Detalhe + Fala Fatec · Agenda: quem terminar primeiro |
+| Divisão das telas | Front A: Login + Home (com sino de Avisos) + Perfil + Avisos (feed e Detalhe) + Fala Fatec (chat) · Front B: Agenda |
 | Contrato com o backend | Telas consomem `src/services/` com mocks tipados; o backend troca pela implementação Firebase no fim, sem tocar nas telas |
+| Chat do Fala Fatec | Canais de setor + conversas 1:1, com dados simulados (tempo real é evolução) |
 | Componentes compartilhados | Criados na fundação (um dono) |
 | Git | Branch por pessoa + merge na `develop` a cada tela pronta |
 | Backend na reta final | Estabilização: integração, bugs e apoio aos frontends |
@@ -27,21 +28,23 @@ Divisão de trabalho para o hackathon: **3 pessoas · 4 horas** (2 frontend + 1 
 
 | Branch | Dono | Telas | Rotas |
 | --- | --- | --- | --- |
-| `feat/front-entrada` | Front A | Login, Home, Perfil | `(auth)/login.tsx`, `(app)/home.tsx`, `(app)/perfil.tsx` |
-| `feat/front-conteudo` | Front B | Avisos (feed + filtros), Detalhe do Aviso, Fala Fatec | `(app)/avisos/`, `(app)/fala-fatec/` |
+| `feat/front-entrada` | Front A | Login, Home (sino de Avisos com badge), Perfil | `(auth)/login.tsx`, `(app)/home.tsx`, `(app)/perfil.tsx` |
+| `feat/front-conteudo` | Front A | Avisos (feed + filtros), Detalhe do Aviso, Fala Fatec (chat: canais + 1:1) | `(app)/avisos/`, `(app)/fala-fatec/` |
+| `feat/agenda` | Front B | Agenda (lista, filtros e detalhe de evento) | `(app)/agenda/` |
 | `feat/backend` | Backend | Security Rules por papel (professor → suas turmas, coordenador → seu curso) e seed | Firebase |
 
-**Agenda** (`(app)/agenda/`) fica para quem terminar as próprias telas primeiro.
+**Navegação:** Avisos não fica mais na barra inferior — é acessado pelo sino no topo da Home. Permanecem 4 abas: Início, Agenda, Fala Fatec e Perfil.
 
 ### T2 — Integração (~45min)
 
-1. Trocar os mocks pelo Firebase na camada de services (assinatura preservada), na ordem: **Auth → Avisos → Solicitações**.
-2. Backend em estabilização e correção de bugs.
+1. Trocar os mocks pelo Firebase na camada de services (assinatura preservada), na ordem: **Auth → Avisos**.
+2. O chat do Fala Fatec permanece simulado nesta versão (tempo real é evolução).
+3. Backend em estabilização e correção de bugs.
 
 ### T3 — Demo (~15min)
 
 - Popular o seed com dados reais e as contas de demonstração.
-- Ensaio do fluxo: login → home → avisos → fala fatec.
+- Ensaio do fluxo: login → Home (tocar no sino) → Avisos → Fala Fatec → enviar mensagem em um canal e em uma conversa 1:1.
 
 ## Regra de merge (DoD)
 
@@ -62,11 +65,12 @@ Senha: qualquer valor com 4+ caracteres (validação mock).
 | Serviço | Funções |
 | --- | --- |
 | `services/auth.ts` | `entrar(email, senha)`, `isEmailInstitucional(email)` |
-| `services/avisos.ts` | `listarAvisos(filtro, contexto)`, `obterAviso(id)` |
+| `services/avisos.ts` | `listarAvisos(filtro, contexto)`, `obterAviso(id)`, `contarNaoLidos(contexto)`, `marcarComoLido(id)`, `marcarTodosComoLidos()` |
 | `services/eventos.ts` | `listarEventos()` |
-| `services/solicitacoes.ts` | `listarSolicitacoes(userId)`, `criarSolicitacao(dados)` |
-| `services/firebase.ts` | `app`, `auth`, `db` (configurados via `.env`) |
+| `services/conversas.ts` | `listarResumos()`, `obterConversa(id)`, `listarMensagens(conversaId)`, `enviarMensagem(conversaId, autorId, texto)`, `responderAutomatico(conversaId)`, `obterConversaComPessoa(pessoaId, usuarioId)` |
+| `services/solicitacoes.ts` | `listarSolicitacoes(userId)`, `criarSolicitacao(dados)` — mantido como evolução (chamados) |
+| `services/firebase.ts` | `app`, `auth`, `db`, `storage` (configurados via `.env`) |
 
 ## Fora de escopo
 
-Comunidade, Oportunidades, Serviços, notificações push e OAuth Microsoft (evolução — ver documento do projeto).
+Comunidade, Oportunidades, Serviços, notificações push, OAuth Microsoft, chat em tempo real, anexos e reações (evolução — ver documento do projeto).

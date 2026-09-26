@@ -1,66 +1,84 @@
-import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { Button, Card, Input, StatusPill } from "@/components";
-import { usuariosMock } from "@/services/mocks/usuarios";
-import { criarSolicitacao, listarSolicitacoes } from "@/services/solicitacoes";
-import { colors, typography } from "@/theme";
-import type { Solicitacao } from "@/types";
+import { listarResumos, type ResumoConversa } from "@/services/conversas";
+import { colors, radii, typography } from "@/theme";
 
-const usuario = usuariosMock[0];
+function formatarHora(iso: string): string {
+  const data = new Date(iso);
+  const hoje = new Date();
+  const mesmoDia = data.toDateString() === hoje.toDateString();
+  if (mesmoDia) {
+    return data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  }
+  return data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+}
 
 export default function FalaFatec() {
-  const [solicitacoes, setSolicitacoes] = useState<Solicitacao[]>([]);
-  const [titulo, setTitulo] = useState("");
-  const [descricao, setDescricao] = useState("");
-  const [categoria, setCategoria] = useState("Infraestrutura");
-  const [setor, setSetor] = useState("Infraestrutura");
+  const router = useRouter();
+  const [resumos, setResumos] = useState<ResumoConversa[]>([]);
 
-  useEffect(() => {
-    listarSolicitacoes(usuario.id).then(setSolicitacoes);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      listarResumos().then(setResumos);
+    }, []),
+  );
 
-  async function handleEnviar() {
-    if (!titulo.trim() || !descricao.trim()) {
-      return;
-    }
-    const nova = await criarSolicitacao({
-      userId: usuario.id,
-      categoria,
-      setor,
-      titulo: titulo.trim(),
-      descricao: descricao.trim(),
-    });
-    setSolicitacoes((atual) => [nova, ...atual]);
-    setTitulo("");
-    setDescricao("");
+  const canais = resumos.filter((item) => item.conversa.tipo === "canal");
+  const conversasDiretas = resumos.filter((item) => item.conversa.tipo === "dm");
+
+  function renderLinha({ conversa, ultimaMensagem }: ResumoConversa) {
+    return (
+      <Pressable
+        key={conversa.id}
+        onPress={() => router.push(`/fala-fatec/${conversa.id}`)}
+        style={styles.linha}
+      >
+        <View style={styles.avatar}>
+          <Ionicons
+            name={conversa.tipo === "canal" ? "people" : "person"}
+            size={18}
+            color={colors.background}
+          />
+        </View>
+        <View style={styles.conteudo}>
+          <Text style={styles.nome} numberOfLines={1}>
+            {conversa.nome}
+          </Text>
+          <Text style={styles.previa} numberOfLines={1}>
+            {ultimaMensagem?.texto ?? "Sem mensagens"}
+          </Text>
+        </View>
+        {ultimaMensagem ? <Text style={styles.hora}>{formatarHora(ultimaMensagem.enviadaEm)}</Text> : null}
+      </Pressable>
+    );
   }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.secao}>Nova solicitação</Text>
-      <Input label="Título" value={titulo} onChangeText={setTitulo} placeholder="Resumo do problema" />
-      <Input
-        label="Descrição"
-        value={descricao}
-        onChangeText={setDescricao}
-        placeholder="Descreva sua dúvida ou solicitação"
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Nova conversa"
+              testID="chat-nova"
+              onPress={() => router.push("/fala-fatec/nova")}
+              style={styles.novo}
+            >
+              <Ionicons name="add" size={26} color={colors.brand} />
+            </Pressable>
+          ),
+        }}
       />
-      <Input label="Categoria" value={categoria} onChangeText={setCategoria} />
-      <Input label="Setor" value={setor} onChangeText={setSetor} />
-      <Button label="Enviar solicitação" onPress={handleEnviar} />
 
-      <Text style={styles.secao}>Minhas solicitações</Text>
-      {solicitacoes.map((solicitacao) => (
-        <Card key={solicitacao.id}>
-          <View style={styles.linha}>
-            <Text style={styles.titulo}>{solicitacao.titulo}</Text>
-            <StatusPill status={solicitacao.status} />
-          </View>
-          <Text style={styles.texto}>{solicitacao.descricao}</Text>
-          <Text style={styles.meta}>Protocolo {solicitacao.protocolo}</Text>
-        </Card>
-      ))}
+      <Text style={styles.secao}>Canais</Text>
+      {canais.map(renderLinha)}
+
+      <Text style={styles.secao}>Conversas diretas</Text>
+      {conversasDiretas.map(renderLinha)}
     </ScrollView>
   );
 }
@@ -73,35 +91,52 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
   },
+  novo: {
+    marginRight: 12,
+    padding: 4,
+  },
   secao: {
     fontFamily: typography.family.extrabold,
-    fontSize: typography.size.title,
-    color: colors.textStrong,
-    marginBottom: 12,
-    marginTop: 16,
+    fontSize: typography.size.subtitle,
+    color: colors.text,
+    marginTop: 12,
+    marginBottom: 8,
   },
   linha: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    backgroundColor: colors.surface,
+    borderRadius: radii.card,
+    padding: 12,
+    marginBottom: 8,
   },
-  titulo: {
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.blue,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  conteudo: {
     flex: 1,
+  },
+  nome: {
     fontFamily: typography.family.semibold,
-    fontSize: typography.size.subtitle,
-    color: colors.textStrong,
-    marginRight: 8,
-  },
-  texto: {
-    fontFamily: typography.family.regular,
     fontSize: typography.size.body,
-    color: colors.text,
-    marginTop: 8,
+    color: colors.textStrong,
   },
-  meta: {
+  previa: {
     fontFamily: typography.family.regular,
     fontSize: typography.size.caption,
     color: colors.text,
-    marginTop: 8,
+    marginTop: 2,
+  },
+  hora: {
+    fontFamily: typography.family.regular,
+    fontSize: typography.size.caption,
+    color: colors.text,
+    marginLeft: 8,
   },
 });

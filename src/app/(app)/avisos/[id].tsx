@@ -1,6 +1,6 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
+import { ScrollView, StyleSheet, Text } from "react-native";
 
 import { BadgeOficial } from "@/components";
 import { obterAviso } from "@/services/avisos";
@@ -9,7 +9,6 @@ import type { Aviso } from "@/types";
 
 export default function DetalheAviso() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const [aviso, setAviso] = useState<Aviso | undefined>();
 
   useEffect(() => {
@@ -21,9 +20,6 @@ export default function DetalheAviso() {
   if (!aviso) {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Pressable onPress={() => router.back()}>
-          <Text style={styles.voltar}>Voltar</Text>
-        </Pressable>
         <Text style={styles.texto}>Carregando aviso...</Text>
       </ScrollView>
     );
@@ -31,10 +27,6 @@ export default function DetalheAviso() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Pressable onPress={() => router.back()}>
-        <Text style={styles.voltar}>Voltar</Text>
-      </Pressable>
-
       {aviso.origem !== "professor" ? <BadgeOficial /> : null}
       <Text style={styles.titulo}>{aviso.titulo}</Text>
       <Text style={styles.meta}>
@@ -56,12 +48,6 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-  },
-  voltar: {
-    fontFamily: typography.family.semibold,
-    fontSize: typography.size.body,
-    color: colors.blue,
-    marginBottom: 16,
   },
   titulo: {
     fontFamily: typography.family.extrabold,

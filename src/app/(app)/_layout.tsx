@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
+import { NotificationBell } from "@/components";
 import { colors, typography } from "@/theme";
 
 export default function AppLayout() {
@@ -18,14 +19,15 @@ export default function AppLayout() {
         name="home"
         options={{
           title: "Início",
+          headerRight: () => <NotificationBell />,
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} />,
         }}
       />
       <Tabs.Screen
         name="avisos"
         options={{
-          title: "Avisos",
-          tabBarIcon: ({ color, size }) => <Ionicons name="megaphone-outline" color={color} size={size} />,
+          href: null,
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -39,6 +41,7 @@ export default function AppLayout() {
         name="fala-fatec"
         options={{
           title: "Fala Fatec",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubble-ellipses-outline" color={color} size={size} />
           ),

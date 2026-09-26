@@ -69,8 +69,13 @@ Senha: qualquer valor com 4+ caracteres (validação mock).
 | `services/eventos.ts` | `listarEventos()` |
 | `services/conversas.ts` | `listarResumos()`, `obterConversa(id)`, `listarMensagens(conversaId)`, `enviarMensagem(conversaId, autorId, texto)`, `responderAutomatico(conversaId)`, `obterConversaComPessoa(pessoaId, usuarioId)` |
 | `services/solicitacoes.ts` | `listarSolicitacoes(userId)`, `criarSolicitacao(dados)` — mantido como evolução (chamados) |
+| `services/acessibilidade.tsx` | `AcessibilidadeProvider`, `useAcessibilidade()`, `filtrosDaltonismo`, `escalasTexto` |
 | `services/firebase.ts` | `app`, `auth`, `db`, `storage` (configurados via `.env`) |
+
+## Diferencial do hackathon — Acessibilidade
+
+Filtros de daltonismo no mesmo padrão do site oficial do CPS (Acromatomia, Acromatopsia, Deuteranomalia, Deuteranopia, Protanomalia, Protanopia, Tritanomalia, Tritanopia) e três níveis de tamanho de texto, acionados por um ícone no header de todas as telas (bottom sheet) e persistidos no dispositivo. Responsável: Front A. No demo web o filtro é aplicado globalmente na raiz do app; em nativo o filtro visual fica como evolução.
 
 ## Fora de escopo
 
-Comunidade, Oportunidades, Serviços, notificações push, OAuth Microsoft, chat em tempo real, anexos e reações (evolução — ver documento do projeto).
+Comunidade, Oportunidades, Serviços, notificações push, OAuth Microsoft, chat em tempo real, anexos, reações, ThemeProvider com paletas próprias e filtro visual em nativo (evolução — ver documento do projeto).

@@ -10,6 +10,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { AcessibilidadeProvider } from "@/services/acessibilidade";
 import { colors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync();
@@ -33,13 +34,15 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      />
-      <StatusBar style="dark" />
+      <AcessibilidadeProvider>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: colors.background },
+          }}
+        />
+        <StatusBar style="dark" />
+      </AcessibilidadeProvider>
     </SafeAreaProvider>
   );
 }

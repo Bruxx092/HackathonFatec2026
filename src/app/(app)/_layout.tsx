@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { View } from "react-native";
 
-import { NotificationBell } from "@/components";
+import { AccessibilityButton, NotificationBell } from "@/components";
 import { colors, typography } from "@/theme";
 
 export default function AppLayout() {
@@ -13,13 +14,19 @@ export default function AppLayout() {
         tabBarLabelStyle: { fontFamily: typography.family.semibold, fontSize: 11 },
         headerTitleStyle: { fontFamily: typography.family.extrabold, color: colors.textStrong },
         headerStyle: { backgroundColor: colors.background },
+        headerRight: () => <AccessibilityButton />,
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
           title: "Início",
-          headerRight: () => <NotificationBell />,
+          headerRight: () => (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <NotificationBell />
+              <AccessibilityButton />
+            </View>
+          ),
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} />,
         }}
       />

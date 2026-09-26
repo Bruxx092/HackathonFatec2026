@@ -149,6 +149,7 @@ O aplicativo valida o papel e o escopo no momento da publicação, e o Firebase 
 | Oportunidades | Divulgação de estágios, cursos, certificações, eventos e hackathons. |
 | Serviços Fatec | Informações sobre secretaria, biblioteca, coordenação, laboratórios e outros setores. |
 | Notificações | Alertas sobre novos avisos, mudanças relevantes, eventos e atualizações em solicitações. |
+| Acessibilidade | Filtros de daltonismo (padrão do site oficial do CPS) e três níveis de tamanho de texto, aplicáveis a todo o app e persistidos no dispositivo. |
 | Assistente virtual — evolução | Consulta rápida de informações cadastradas pela instituição, sem substituir os canais oficiais. |
 
 ## 4.1 Prioridade para o MVP do Hackathon
@@ -270,6 +271,16 @@ Minhas solicitações.
 Preferências de notificações.
 
 Configurações e logout.
+
+## 5.9 Acessibilidade
+
+Ícone de acessibilidade no header de todas as telas, abrindo um painel (bottom sheet) com:
+
+Filtros de daltonismo no mesmo padrão do site oficial do CPS: Cores Padrão, Acromatomia, Acromatopsia, Deuteranomalia, Deuteranopia, Protanomalia, Protanopia, Tritanomalia e Tritanopia.
+
+Tamanho do texto em três níveis: Normal, Grande e Enorme.
+
+A escolha é aplicada a todo o app e fica salva no dispositivo, mantendo a preferência entre sessões.
 
 # 6. Stack Tecnológica
 
@@ -421,6 +432,8 @@ RF14 — O sistema deve exibir no feed apenas os avisos direcionados ao perfil a
 
 RF15 — O sistema deve exibir no topo da Home um sino de Avisos com a contagem de não lidos.
 
+RF16 — O sistema deve oferecer filtros de daltonismo (padrão do site do CPS) e três níveis de tamanho de texto, com a preferência persistida no dispositivo.
+
 ## 8.2 Requisitos não funcionais
 
 RNF01 — A interface deve ser simples e responsiva.
@@ -477,6 +490,8 @@ Histórico: Avisos, eventos e solicitações permanecem organizados e consultáv
 Escalabilidade: A proposta pode começar como MVP e crescer para outras unidades ou instituições.
 
 Experiência mobile: O estudante pode consultar rapidamente as informações pelo celular.
+
+Acessibilidade: Filtros de daltonismo no mesmo padrão do site oficial do CPS e três níveis de tamanho de texto, tratando inclusão como parte da comunicação.
 
 ## 10.1 Uso de inteligência artificial como evolução
 

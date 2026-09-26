@@ -70,6 +70,10 @@ npx expo start
 
 O acesso usa o e-mail institucional da Fatec (conta Microsoft, domínio `@fatec.sp.gov.br`) com senha. O botão "Entrar com conta Microsoft" (OAuth via Firebase Auth) está previsto como evolução.
 
+## Diferencial — Acessibilidade
+
+Ícone de acessibilidade no topo de todas as telas com **filtros de daltonismo no mesmo padrão do site oficial do CPS** (Acromatomia, Acromatopsia, Deuteranomalia, Deuteranopia, Protanomalia, Protanopia, Tritanomalia e Tritanopia) e **três níveis de tamanho de texto**, com a preferência salva no dispositivo.
+
 ## Equipe
 
 - Pedro Henrique

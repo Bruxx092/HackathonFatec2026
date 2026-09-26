@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { View } from "react-native";
 
+import { AccessibilityButton, NotificationBell } from "@/components";
 import { colors, typography } from "@/theme";
 
 export default function AppLayout() {
@@ -12,12 +14,19 @@ export default function AppLayout() {
         tabBarLabelStyle: { fontFamily: typography.family.semibold, fontSize: 11 },
         headerTitleStyle: { fontFamily: typography.family.extrabold, color: colors.textStrong },
         headerStyle: { backgroundColor: colors.background },
+        headerRight: () => <AccessibilityButton />,
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
           title: "Início",
+          headerRight: () => (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <NotificationBell />
+              <AccessibilityButton />
+            </View>
+          ),
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" color={color} size={size} />,
         }}
       />
@@ -26,9 +35,8 @@ export default function AppLayout() {
       <Tabs.Screen
         name="avisos/index"
         options={{
-          title: "Avisos",
-          headerTitle: "Avisos",
-          tabBarIcon: ({ color, size }) => <Ionicons name="megaphone-outline" color={color} size={size} />,
+          href: null,
+          headerShown: false,
         }}
       />
 
@@ -53,6 +61,7 @@ export default function AppLayout() {
         name="fala-fatec/index"
         options={{
           title: "Fala Fatec",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubble-ellipses-outline" color={color} size={size} />
           ),

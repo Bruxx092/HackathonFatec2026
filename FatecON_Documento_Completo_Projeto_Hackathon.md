@@ -88,7 +88,7 @@ O FatecON funcionará como um hub de comunicação acadêmica. Depois de entrar 
 | --- | --- | --- |
 | Informar | Entregar informações relevantes de forma organizada. | Avisos, agenda, notificações e oportunidades. |
 | Conectar | Facilitar a troca de informações entre estudantes. | Comunidade, dúvidas e respostas. |
-| Ouvir | Criar comunicação de mão dupla com a instituição. | Fala Fatec, protocolo e acompanhamento. |
+| Ouvir | Criar comunicação de mão dupla com a instituição. | Fala Fatec (chat com setores e pessoas). |
 | Orientar | Ajudar o aluno a encontrar serviços e setores. | Serviços, contatos e perguntas frequentes. |
 
 ## 3.2 Público-alvo
@@ -145,10 +145,11 @@ O aplicativo valida o papel e o escopo no momento da publicação, e o Firebase 
 | Avisos | Feed de comunicados com filtros por categoria, curso, turma e relevância. Publicação com escopo conforme o papel: professor publica apenas para suas turmas vinculadas; coordenador publica avisos oficiais apenas para o seu curso. |
 | Agenda acadêmica | Visualização de provas, entregas, eventos, palestras e outras datas importantes. |
 | Comunidade | Espaço de perguntas, publicações e respostas entre estudantes, com possibilidade de resposta oficial verificada. |
-| Fala Fatec | Canal de dúvidas, sugestões, problemas e solicitações com protocolo e acompanhamento de status. |
+| Fala Fatec | Chat de comunicação com a instituição e as pessoas: canais de setor (Secretaria, Biblioteca, Infraestrutura, Coordenação) e conversas diretas 1:1. |
 | Oportunidades | Divulgação de estágios, cursos, certificações, eventos e hackathons. |
 | Serviços Fatec | Informações sobre secretaria, biblioteca, coordenação, laboratórios e outros setores. |
 | Notificações | Alertas sobre novos avisos, mudanças relevantes, eventos e atualizações em solicitações. |
+| Acessibilidade | Filtros de daltonismo (padrão do site oficial do CPS) e três níveis de tamanho de texto, aplicáveis a todo o app e persistidos no dispositivo. |
 | Assistente virtual — evolução | Consulta rápida de informações cadastradas pela instituição, sem substituir os canais oficiais. |
 
 ## 4.1 Prioridade para o MVP do Hackathon
@@ -169,7 +170,7 @@ Para manter o escopo executável, o MVP deve priorizar a experiência principal 
 
 # 5. Fluxo de Telas
 
-Splash → Login → Home → Avisos / Agenda / Comunidade / Fala Fatec / Perfil
+Splash → Login → Home (com sino de Avisos) → Avisos / Agenda / Fala Fatec (chat) / Perfil
 
 ## 5.1 Splash
 
@@ -199,7 +200,7 @@ Saudação e nome do estudante.
 
 Curso e semestre.
 
-Indicador de notificações.
+Sino de Avisos no topo do header, com contagem de avisos não lidos, que abre a tela de Avisos.
 
 Avisos importantes.
 
@@ -247,19 +248,17 @@ Possibilidade de marcar resposta oficial/verificada.
 
 ## 5.7 Fala Fatec
 
-Categorias: dúvida, sugestão, problema, infraestrutura, biblioteca, secretaria etc.
+Lista de conversas no estilo Teams: canais de setor e conversas diretas.
 
-Formulário de nova solicitação.
+Canais de setor: Secretaria, Biblioteca, Infraestrutura e Coordenação.
 
-Título, descrição, categoria e setor.
+Conversas 1:1 com pessoas (professores, coordenação e colegas), iniciadas pelo botão "+".
 
-Anexo de imagem como evolução opcional.
+Tela de conversa com histórico de mensagens (agrupadas por autor), campo de texto e envio.
 
-Geração de protocolo.
+Mensagens apenas de texto nesta versão.
 
-Linha do tempo: Enviado → Recebido → Em análise → Resolvido.
-
-Resposta do setor responsável.
+No MVP as mensagens são simuladas; o chat em tempo real via Firestore é evolução.
 
 ## 5.8 Perfil
 
@@ -272,6 +271,16 @@ Minhas solicitações.
 Preferências de notificações.
 
 Configurações e logout.
+
+## 5.9 Acessibilidade
+
+Ícone de acessibilidade no header de todas as telas, abrindo um painel (bottom sheet) com:
+
+Filtros de daltonismo no mesmo padrão do site oficial do CPS: Cores Padrão, Acromatomia, Acromatopsia, Deuteranomalia, Deuteranopia, Protanomalia, Protanopia, Tritanomalia e Tritanopia.
+
+Tamanho do texto em três níveis: Normal, Grande e Enorme.
+
+A escolha é aplicada a todo o app e fica salva no dispositivo, mantendo a preferência entre sessões.
 
 # 6. Stack Tecnológica
 
@@ -328,7 +337,7 @@ Pode ser substituído futuramente por uma API própria se o projeto crescer.
 
 A identidade do FatecON deriva da marca do Centro Paula Souza (CPS), usando os tokens oficiais do Guia de Estilo Digital CPS.
 
-Paleta principal: vermelho institucional #B20000 (marca, botões e badge OFICIAL), azul #005C6D (links e destaques), cinza #666666 (texto), superfícies #F8F8F8 e fundo #FFFFFF. Status do Fala Fatec usam as cores de feedback do guia (#D32719, #B78718, #3ACF1F).
+Paleta principal: vermelho institucional #B20000 (marca, botões e badge OFICIAL), azul #005C6D (links e destaques), cinza #666666 (texto), superfícies #F8F8F8 e fundo #FFFFFF. As cores de feedback do guia (#D32719, #B78718, #3ACF1F) ficam reservadas para status (evolução: chamados).
 
 Tipografia: Montserrat (400 para corpo, 600 para subtítulos e botões, 800 para títulos e wordmark).
 
@@ -356,12 +365,16 @@ src/
 │       ├── _layout.tsx
 │       ├── home.tsx
 │       ├── avisos/
+│       │   ├── _layout.tsx
 │       │   ├── index.tsx
 │       │   └── [id].tsx
 │       ├── agenda/
 │       │   └── index.tsx
 │       ├── fala-fatec/
-│       │   └── index.tsx
+│       │   ├── _layout.tsx
+│       │   ├── index.tsx
+│       │   ├── [id].tsx
+│       │   └── nova.tsx
 │       └── perfil.tsx
 ├── components/
 ├── services/
@@ -401,7 +414,7 @@ RF05 — O sistema deve permitir abrir o detalhe de um aviso.
 
 RF06 — O sistema deve listar eventos e datas acadêmicas.
 
-RF07 — O sistema deve permitir criar e acompanhar uma solicitação no Fala Fatec.
+RF07 — O sistema deve permitir conversar com setores (canais) e com pessoas (conversas 1:1) no Fala Fatec.
 
 RF08 — O sistema deve exibir o status da solicitação.
 
@@ -416,6 +429,10 @@ RF12 — O sistema deve permitir que o professor publique avisos apenas para as 
 RF13 — O sistema deve permitir que o coordenador publique avisos oficiais apenas para o seu curso.
 
 RF14 — O sistema deve exibir no feed apenas os avisos direcionados ao perfil acadêmico do estudante.
+
+RF15 — O sistema deve exibir no topo da Home um sino de Avisos com a contagem de não lidos.
+
+RF16 — O sistema deve oferecer filtros de daltonismo (padrão do site do CPS) e três níveis de tamanho de texto, com a preferência persistida no dispositivo.
 
 ## 8.2 Requisitos não funcionais
 
@@ -449,13 +466,13 @@ Em seguida, verifica a agenda acadêmica.
 
 Caso tenha uma dúvida ou problema, acessa o Fala Fatec.
 
-Cria uma solicitação e recebe um protocolo.
+Escolhe o canal do setor (por exemplo, Secretaria) ou uma conversa direta com um professor.
 
-Posteriormente, acompanha a mudança de status até a resolução.
+Envia a mensagem e recebe a resposta na própria conversa.
 
 ## 9.1 Exemplo de caso de uso
 
-| Um aluno descobre pela Home que uma aula mudou de sala. Ele abre o aviso, confirma o novo local e cria um lembrete. No mesmo aplicativo, verifica um evento da semana e acompanha uma solicitação enviada à infraestrutura. |
+| Um aluno descobre pela Home que uma aula mudou de sala (sino de avisos com notificações). Ele abre o aviso, confirma o novo local e, no mesmo aplicativo, verifica um evento da semana e conversa com a infraestrutura pelo canal do Fala Fatec. |
 | --- |
 
 # 10. Diferenciais da Proposta
@@ -474,6 +491,8 @@ Escalabilidade: A proposta pode começar como MVP e crescer para outras unidades
 
 Experiência mobile: O estudante pode consultar rapidamente as informações pelo celular.
 
+Acessibilidade: Filtros de daltonismo no mesmo padrão do site oficial do CPS e três níveis de tamanho de texto, tratando inclusão como parte da comunicação.
+
 ## 10.1 Uso de inteligência artificial como evolução
 
 Uma evolução futura pode incluir um assistente que responda dúvidas usando somente uma base institucional validada, como horários de setores, procedimentos e perguntas frequentes. A IA deve ser apresentada como ferramenta complementar de busca e orientação, mantendo as fontes oficiais como referência.
@@ -490,7 +509,7 @@ Lista e detalhe de avisos.
 
 Agenda em formato de lista.
 
-Fala Fatec com criação e acompanhamento de solicitação.
+Fala Fatec como chat (canais de setor e conversas 1:1, com mensagens simuladas).
 
 Perfil e logout.
 
@@ -512,7 +531,7 @@ Dados reais de demonstração ou seed no Firestore, incluindo as turmas dos curs
 
 Integração real com todos os sistemas da Fatec.
 
-Chat em tempo real completo.
+Chat em tempo real de verdade (o MVP usa mensagens simuladas), anexos e reações.
 
 Calendário extremamente complexo.
 
@@ -578,7 +597,7 @@ Evitar alterações grandes de última hora antes da apresentação.
 
 ## 13.3 Quadro de tarefas
 
-A divisão de telas entre os frontends, as branches, o contrato de services com mocks e a ordem de integração com o Firebase estão documentados em docs/planejamento-equipe.md.
+A divisão de trabalho da equipe está em docs/planejamento-equipe.md: Front A (Login, Home com sino de Avisos, Perfil, Avisos, Detalhe e Fala Fatec/chat), Front B (Agenda) e Backend (Firebase). O documento também traz as branches, o contrato de services com mocks e a ordem de integração.
 
 # 14. Critérios de Sucesso do MVP
 
@@ -590,9 +609,9 @@ O usuário consegue consultar um aviso completo.
 
 O usuário consegue visualizar os próximos eventos.
 
-O usuário consegue criar uma solicitação no Fala Fatec.
+O usuário consegue enviar uma mensagem em um canal de setor do Fala Fatec.
 
-O usuário consegue acompanhar o status da solicitação.
+O usuário consegue enviar uma mensagem em uma conversa direta 1:1 e receber resposta.
 
 O fluxo é demonstrável em poucos minutos sem depender de explicações extensas.
 

@@ -34,6 +34,7 @@ export interface Aviso {
   turma?: string;
   autor: string;
   dataPublicacao: string;
+  lido?: boolean;
 }
 
 export interface Evento {
@@ -96,4 +97,23 @@ export interface Oportunidade {
   link: string;
   prazo: string;
   dataPublicacao: string;
+}
+
+export type ConversaTipo = "canal" | "dm";
+
+export interface Conversa {
+  id: string;
+  tipo: ConversaTipo;
+  nome: string;
+  setor?: string;
+  participantes: string[];
+  atualizadaEm: string;
+}
+
+export interface Mensagem {
+  id: string;
+  conversaId: string;
+  autorId: string;
+  texto: string;
+  enviadaEm: string;
 }

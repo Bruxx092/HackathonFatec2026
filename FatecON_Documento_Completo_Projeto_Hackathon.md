@@ -343,9 +343,33 @@ O detalhamento (paleta completa, contrastes WCAG, formas e aplicação no códig
 
 O aplicativo será responsável pela interface e interação do usuário. A camada de serviços realizará as operações de consulta e alteração dos dados. No MVP, o Firebase poderá fornecer autenticação (Firebase Auth), persistência (Cloud Firestore) e regras de acesso (Security Rules). A separação entre UI, regras e acesso a dados evita que as telas fiquem responsáveis por toda a lógica.
 
-## 7.1 Estrutura de pastas sugerida
+## 7.1 Estrutura de pastas
 
-src/ ├── app/ │ ├── (auth)/ │ │ └── login.tsx │ └── (app)/ │ ├── home.tsx │ ├── avisos/ │ ├── agenda/ │ ├── comunidade/ │ ├── fala-fatec/ │ └── perfil.tsx ├── components/ ├── features/ ├── services/ ├── hooks/ ├── types/ └── constants/
+src/
+├── app/
+│   ├── _layout.tsx
+│   ├── index.tsx
+│   ├── (auth)/
+│   │   ├── _layout.tsx
+│   │   └── login.tsx
+│   └── (app)/
+│       ├── _layout.tsx
+│       ├── home.tsx
+│       ├── avisos/
+│       │   ├── index.tsx
+│       │   └── [id].tsx
+│       ├── agenda/
+│       │   └── index.tsx
+│       ├── fala-fatec/
+│       │   └── index.tsx
+│       └── perfil.tsx
+├── components/
+├── services/
+│   └── mocks/
+├── types/
+└── theme.ts
+
+As credenciais do Firebase ficam em `.env` (não versionado); `.env.example` documenta as variáveis `EXPO_PUBLIC_FIREBASE_*`.
 
 ## 7.2 Entidades principais
 
@@ -551,6 +575,10 @@ Commits pequenos e descritivos.
 Pull Requests quando houver mais de um integrante trabalhando no código.
 
 Evitar alterações grandes de última hora antes da apresentação.
+
+## 13.3 Quadro de tarefas
+
+A divisão de telas entre os frontends, as branches, o contrato de services com mocks e a ordem de integração com o Firebase estão documentados em docs/planejamento-equipe.md.
 
 # 14. Critérios de Sucesso do MVP
 

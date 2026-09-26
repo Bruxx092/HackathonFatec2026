@@ -10,6 +10,7 @@ Aplicativo mobile para melhorar a comunicação do estudante na Fatec Itaquera -
 
 - Especificação completa: [`FatecON_Documento_Completo_Projeto_Hackathon.md`](./FatecON_Documento_Completo_Projeto_Hackathon.md)
 - Identidade visual: [`docs/identidade-visual.md`](./docs/identidade-visual.md)
+- Planejamento da equipe: [`docs/planejamento-equipe.md`](./docs/planejamento-equipe.md)
 
 ## Papéis e escopo de publicação
 
@@ -29,6 +30,16 @@ Desenvolvimento de Software Multiplataforma (DSM), Automação Industrial, Engen
 - React Native + TypeScript + Expo
 - Firebase (Auth, Cloud Firestore, Security Rules)
 - Docker / Docker Compose
+
+## Configuração
+
+Copie o arquivo de exemplo e preencha as credenciais do Firebase (peça ao time):
+
+```bash
+cp .env.example .env
+```
+
+O `firebase.ts` inicializa o app somente quando as variáveis `EXPO_PUBLIC_FIREBASE_*` estão preenchidas; sem elas o app roda com os mocks de `src/services/mocks/`.
 
 ## Rodando com Docker
 

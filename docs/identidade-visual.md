@@ -74,7 +74,9 @@ Montar um slide com:
 | Arquivo | Conteúdo |
 | --- | --- |
 | `src/theme.ts` | Tokens de cor, tipografia, raios e sombras |
-| `App.tsx` | Wordmark e carregamento da Montserrat |
+| `src/app/_layout.tsx` | Carregamento da Montserrat e splash |
+| `src/app/(auth)/login.tsx` | Wordmark e slogan na tela de login |
+| `src/components/` | Componentes compartilhados usando os tokens |
 | `app.json` | Ícone, splash e backgroundColor |
 | `assets/` | Ícone e splash (PNG + SVG fonte) |
 | `docs/assets/banner.svg` | Banner do README |

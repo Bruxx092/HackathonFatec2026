@@ -2,6 +2,7 @@
   "expo": {
     "name": "FatecON",
     "slug": "fatecon",
+    "scheme": "fatecon",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -27,7 +28,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#FFFFFF"
         }
-      ]
+      ],
+      "expo-router"
     ]
   }
 }

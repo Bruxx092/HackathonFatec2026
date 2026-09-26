@@ -7,11 +7,14 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert
 } from "react-native";
 
 import { Button, Input } from "@/components";
 import { entrar } from "@/services/auth";
 import { colors, typography } from "@/theme";
+import { rodarSeedsUsuarios } from "@/seeds/seed";
+
 
 export default function Login() {
   const router = useRouter();
@@ -20,6 +23,20 @@ export default function Login() {
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
 
+
+  const [carregandoSeed, setCarregandoSeed] = useState(false);
+
+  const handleRodarSeed = async () => {
+    try {
+      setCarregandoSeed(true);
+      const resultado = await rodarSeedsUsuarios();
+      Alert.alert("Resultado do Seed", resultado);
+    } catch (error: any) {
+      Alert.alert("Erro ao rodar seed", error.message);
+    } finally {
+      setCarregandoSeed(false);
+    }
+  };
   async function handleEntrar() {
     setErro(null);
     try {
@@ -81,6 +98,13 @@ export default function Login() {
         </View>
 
         <Text style={styles.rodape}>Hackathon Fatec 2026 · Itaquera</Text>
+        {/* <View style={{ marginTop: 16 }}>
+        <Button
+          label={carregandoSeed ? "Gerando Usuários..." : "⚡ População Dev (Seed)"}
+          onPress={handleRodarSeed}
+          disabled={carregandoSeed}
+        />
+      </View> */}
       </ScrollView>
     </KeyboardAvoidingView>
   );

@@ -95,11 +95,11 @@ O FatecON funcionará como um hub de comunicação acadêmica. Depois de entrar 
 
 Estudantes da Fatec.
 
-Coordenações de curso.
+Professores, que publicam avisos para as turmas vinculadas a eles.
+
+Coordenações de curso, que publicam avisos oficiais para o seu curso.
 
 Secretaria e setores administrativos.
-
-Professores e responsáveis por comunicados acadêmicos.
 
 ## 3.3 Benefícios esperados
 
@@ -117,13 +117,32 @@ Criar um histórico pesquisável de informações.
 
 Apoiar a integração e participação da comunidade acadêmica.
 
+## 3.4 Papéis e permissões
+
+O FatecON define identidades com escopos de publicação distintos, garantindo que cada comunicado oficial venha da fonte correta e alcance apenas o público-alvo adequado.
+
+| Papel | Pode publicar | Escopo de publicação |
+| --- | --- | --- |
+| Estudante | Publicações da comunidade | Comunidade estudantil |
+| Professor | Avisos | Apenas as turmas vinculadas a ele (ex.: DSM 3º semestre — Manhã) |
+| Coordenador de curso | Avisos oficiais | Apenas o seu curso (ex.: o coordenador de DSM publica somente para DSM) |
+| Direção / setores administrativos (evolução) | Avisos institucionais | Toda a unidade |
+
+Regras de leitura do feed:
+
+O estudante recebe avisos oficiais do seu curso (coordenação), avisos das turmas em que está matriculado (professores) e publicações da comunidade.
+
+Uma turma é identificada por curso + semestre + turno.
+
+O aplicativo valida o papel e o escopo no momento da publicação, e o Firebase aplica as mesmas regras no banco por meio de Security Rules.
+
 # 4. Funcionalidades do Aplicativo
 
 | Módulo | Descrição |
 | --- | --- |
 | Autenticação e perfil acadêmico | Login do estudante e identificação de curso, semestre, turno e unidade para personalização do conteúdo. |
 | Home personalizada | Resumo com avisos importantes, próximos eventos, atalhos e oportunidades. |
-| Avisos | Feed de comunicados com filtros por categoria, curso, turma e relevância. |
+| Avisos | Feed de comunicados com filtros por categoria, curso, turma e relevância. Publicação com escopo conforme o papel: professor publica apenas para suas turmas vinculadas; coordenador publica avisos oficiais apenas para o seu curso. |
 | Agenda acadêmica | Visualização de provas, entregas, eventos, palestras e outras datas importantes. |
 | Comunidade | Espaço de perguntas, publicações e respostas entre estudantes, com possibilidade de resposta oficial verificada. |
 | Fala Fatec | Canal de dúvidas, sugestões, problemas e solicitações com protocolo e acompanhamento de status. |
@@ -162,13 +181,17 @@ Verificação de sessão do usuário.
 
 ## 5.2 Login
 
-E-mail institucional.
+E-mail institucional da Fatec (conta Microsoft, domínio @fatec.sp.gov.br).
 
 Senha.
 
 Botão Entrar.
 
-Opção visual de recuperação de senha e, futuramente, autenticação institucional.
+Validação do domínio institucional no cadastro.
+
+Opção visual de recuperação de senha.
+
+Evolução futura: botão “Entrar com conta Microsoft” (OAuth Microsoft via Firebase Auth).
 
 ## 5.3 Home
 
@@ -189,6 +212,8 @@ Cards resumidos com conteúdo recente.
 ## 5.4 Avisos e Detalhe do Aviso
 
 Filtros: Todos, Meu Curso, Minha Turma e Institucional.
+
+Publicação conforme o papel: professor publica apenas para suas turmas vinculadas; coordenador publica avisos oficiais apenas para o seu curso.
 
 Título, resumo, autor/setor e data.
 
@@ -259,17 +284,18 @@ A stack foi pensada para permitir desenvolvimento rápido durante o Hackathon, b
 | Framework/Tooling | Expo | Facilita execução, build, testes em dispositivo e desenvolvimento do MVP. |
 | Navegação | Expo Router | Navegação baseada em arquivos e organização das rotas. |
 | Estilização | NativeWind ou StyleSheet | Construção visual e responsividade dos componentes. |
-| Backend/BaaS | Supabase | Autenticação, banco PostgreSQL, APIs e armazenamento com configuração rápida. |
-| Banco de dados | PostgreSQL via Supabase | Persistência de usuários, avisos, eventos, posts e solicitações. |
+| Backend/BaaS | Firebase | Autenticação (e-mail/senha com validação do domínio institucional), banco e regras de acesso com configuração rápida. |
+| Banco de dados | Cloud Firestore | Persistência de usuários, avisos, eventos, posts e solicitações. |
 | Estado remoto | TanStack Query (opcional) | Cache, loading, refetch e sincronização de dados de API. |
 | Formulários | React Hook Form (opcional) | Gerenciamento de formulários. |
 | Validação | Zod (opcional) | Validação de dados no frontend. |
 | Versionamento | Git + GitHub | Colaboração, branches, commits e histórico do projeto. |
+| Infraestrutura local | Docker + Docker Compose | Ambiente padronizado para a equipe rodar o projeto sem instalar dependências localmente. |
 | Design | Figma | Protótipos, fluxo visual e padronização da interface. |
 
 ## 6.1 Stack recomendada para o MVP
 
-| React Native + TypeScript + Expo + Expo Router + StyleSheet/NativeWind + Supabase + PostgreSQL + GitHub |
+| React Native + TypeScript + Expo + Expo Router + StyleSheet/NativeWind + Firebase (Auth + Firestore) + GitHub + Docker |
 | --- |
 
 ## 6.2 Por que React Native?
@@ -284,13 +310,15 @@ Facilita reaproveitamento de componentes.
 
 É adequado para uma experiência mobile centrada no estudante.
 
-## 6.3 Por que Supabase no Hackathon?
+## 6.3 Por que Firebase no Hackathon?
 
 Reduz o tempo necessário para criar autenticação e banco do zero.
 
-Oferece PostgreSQL gerenciado.
+Oferece o Cloud Firestore gerenciado, com sincronização em tempo real.
 
-Permite integração direta com o aplicativo.
+Permite integração direta com o aplicativo por meio do SDK oficial.
+
+Oferece Security Rules para aplicar os papéis e escopos de publicação no banco, e não apenas na interface.
 
 É suficiente para um MVP demonstrável.
 
@@ -298,10 +326,10 @@ Pode ser substituído futuramente por uma API própria se o projeto crescer.
 
 # 7. Arquitetura Inicial
 
-| Aplicativo React Native → Serviços/API → Supabase → PostgreSQL |
+| Aplicativo React Native → Serviços/API → Firebase (Auth + Cloud Firestore) |
 | --- |
 
-O aplicativo será responsável pela interface e interação do usuário. A camada de serviços realizará as operações de consulta e alteração dos dados. No MVP, o Supabase poderá fornecer autenticação, persistência e APIs. A separação entre UI, regras e acesso a dados evita que as telas fiquem responsáveis por toda a lógica.
+O aplicativo será responsável pela interface e interação do usuário. A camada de serviços realizará as operações de consulta e alteração dos dados. No MVP, o Firebase poderá fornecer autenticação (Firebase Auth), persistência (Cloud Firestore) e regras de acesso (Security Rules). A separação entre UI, regras e acesso a dados evita que as telas fiquem responsáveis por toda a lógica.
 
 ## 7.1 Estrutura de pastas sugerida
 
@@ -311,8 +339,9 @@ src/ ├── app/ │ ├── (auth)/ │ │ └── login.tsx │ └─
 
 | Entidade | Campos principais |
 | --- | --- |
-| User | id, nome, email, curso, semestre, turno, unidade, tipoUsuario |
-| Aviso | id, titulo, mensagem, categoria, prioridade, curso, semestre, autor, dataPublicacao |
+| User | id, nome, email, curso, semestre, turno, unidade, tipoUsuario (estudante, professor ou coordenador), turmas (professor), cursoCoordenado (coordenador) |
+| Turma | id, curso, semestre, turno |
+| Aviso | id, titulo, mensagem, categoria, prioridade, curso, semestre, turma, autor, dataPublicacao |
 | Evento | id, titulo, descricao, categoria, data, horario, local, publicoAlvo |
 | Post | id, userId, titulo, conteudo, categoria, dataCriacao |
 | Resposta | id, postId, userId, conteudo, oficial, dataCriacao |
@@ -345,6 +374,12 @@ RF09 — O sistema poderá permitir publicações e respostas na comunidade.
 RF10 — O sistema poderá exibir oportunidades acadêmicas e profissionais.
 
 RF11 — O sistema deve permitir logout.
+
+RF12 — O sistema deve permitir que o professor publique avisos apenas para as turmas vinculadas a ele.
+
+RF13 — O sistema deve permitir que o coordenador publique avisos oficiais apenas para o seu curso.
+
+RF14 — O sistema deve exibir no feed apenas os avisos direcionados ao perfil acadêmico do estudante.
 
 ## 8.2 Requisitos não funcionais
 
@@ -423,7 +458,7 @@ Fala Fatec com criação e acompanhamento de solicitação.
 
 Perfil e logout.
 
-Dados reais de demonstração ou seed no Supabase.
+Dados reais de demonstração ou seed no Firestore, incluindo as turmas dos cursos da Fatec Itaquera e contas de professor e coordenador.
 
 ## 11.2 Evolução após o MVP
 
@@ -489,7 +524,7 @@ Implementação de todas as funcionalidades imaginadas.
 | --- | --- |
 | UX/UI | Fluxos, protótipo no Figma, componentes e identidade visual. |
 | Frontend Mobile | Telas, navegação, estados de loading/erro e integração com serviços. |
-| Backend / Supabase | Banco, autenticação, tabelas, políticas e dados de demonstração. |
+| Backend / Firebase | Auth, Cloud Firestore, Security Rules e dados de demonstração. |
 | Produto / Pitch | Problema, validação da proposta, roteiro, apresentação e demonstração. |
 | QA / Integração | Testes do fluxo principal, revisão visual e correção de bugs. |
 
@@ -556,7 +591,24 @@ Para o Hackathon, o maior valor está em demonstrar um fluxo funcional e coerent
 | Tema | Tecnologia aplicada à melhoria da comunicação do estudante dentro da Fatec. |
 | Problema | Comunicação acadêmica fragmentada e dificuldade para acompanhar informações relevantes. |
 | Solução | Hub mobile centralizado e personalizado de comunicação acadêmica. |
-| Tecnologia | React Native + TypeScript + Expo + Expo Router + Supabase/PostgreSQL. |
+| Tecnologia | React Native + TypeScript + Expo + Expo Router + Firebase (Auth + Firestore). |
 | Telas essenciais | Login, Home, Avisos, Agenda, Fala Fatec e Perfil. |
 | Diferencial | Comunicação de mão dupla e conteúdo direcionado ao perfil acadêmico. |
+| Login | E-mail institucional Microsoft (@fatec.sp.gov.br) com senha; OAuth Microsoft como evolução. |
 | Evolução | Comunidade, oportunidades, notificações, integrações e assistente institucional. |
+
+# 16. Anexo — Cursos da Fatec Itaquera - Prof. Miguel Reale
+
+Lista oficial de cursos da unidade (código f257), utilizada como base para os dados de demonstração (seed) e para a vinculação de turmas, professores e coordenações.
+
+| Curso | Turnos |
+| --- | --- |
+| Desenvolvimento de Software Multiplataforma (DSM) | Tarde |
+| Automação Industrial | Tarde / Noite |
+| Engenharia Mecânica | Noite |
+| Fabricação Mecânica | Noite |
+| Manutenção Industrial | Manhã |
+| Mecânica — Processos de Soldagem | Manhã |
+| Refrigeração, Ventilação e Ar Condicionado | Manhã / Noite |
+
+Fonte: vestibular.fatec.sp.gov.br — Unidades e Cursos, Fatec Itaquera - Prof. Miguel Reale.

@@ -1,9 +1,16 @@
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import { Button, Input } from "@/components";
-import { entrar, isEmailInstitucional } from "@/services/auth";
+import { entrar } from "@/services/auth";
 import { colors, typography } from "@/theme";
 
 export default function Login() {
@@ -15,16 +22,19 @@ export default function Login() {
 
   async function handleEntrar() {
     setErro(null);
-    if (!isEmailInstitucional(email)) {
-      setErro("Use seu e-mail institucional @fatec.sp.gov.br.");
-      return;
-    }
-    setCarregando(true);
     try {
-      await entrar(email, senha);
-      router.replace("/home");
-    } catch (e) {
-      setErro(e instanceof Error ? e.message : "Não foi possível entrar.");
+      setCarregando(true);
+
+      const usuario = await entrar({ email, senha });
+
+      // Redirecionamento condicional por papel de usuário (Role-based Routing)
+      if (usuario.tipoUsuario === "professor" || usuario.tipoUsuario === "coordenador") {
+        router.replace("/(app)/home");
+      } else {
+        router.replace("/(app)/home");
+      }
+    } catch (error: any) {
+      setErro(error.message || "Não foi possível realizar o login.");
     } finally {
       setCarregando(false);
     }
@@ -59,7 +69,9 @@ export default function Login() {
             secureTextEntry
             testID="login-senha"
           />
+
           {erro ? <Text style={styles.erro}>{erro}</Text> : null}
+
           <Button
             label={carregando ? "Entrando..." : "Entrar"}
             onPress={handleEntrar}

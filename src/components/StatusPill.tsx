@@ -3,11 +3,22 @@ import { StyleSheet, Text, View } from "react-native";
 import { colors, radii, typography } from "@/theme";
 import type { SolicitacaoStatus } from "@/types";
 
-const config: Record<SolicitacaoStatus, { label: string; background: string; dot: string }> = {
+const config: Record<
+  SolicitacaoStatus,
+  { label: string; background: string; dot: string }
+> = {
   enviado: { label: "Enviado", background: colors.hover, dot: colors.text },
   recebido: { label: "Recebido", background: colors.hover, dot: colors.blue },
-  em_analise: { label: "Em análise", background: colors.feedback.inProgressLight, dot: colors.feedback.inProgress },
-  resolvido: { label: "Resolvido", background: colors.feedback.doneLight, dot: colors.feedback.done },
+  em_analise: {
+    label: "Em análise",
+    background: colors.feedback.inProgressLight,
+    dot: colors.feedback.inProgress,
+  },
+  resolvido: {
+    label: "Resolvido",
+    background: colors.feedback.doneLight,
+    dot: colors.feedback.done,
+  },
 };
 
 interface Props {
@@ -30,8 +41,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderRadius: radii.pill,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
   },
   dot: {
     width: 8,

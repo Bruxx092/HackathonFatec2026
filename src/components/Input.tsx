@@ -1,4 +1,11 @@
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
+import { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  type TextInputProps,
+} from "react-native";
 
 import { colors, radii, typography } from "@/theme";
 
@@ -25,12 +32,20 @@ export function Input({
   autoCapitalize,
   testID,
 }: Props) {
+  const [focused, setFocused] = useState(false);
   return (
     <View style={styles.container}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
       <TextInput
         testID={testID}
-        style={[styles.input, error ? styles.inputError : null]}
+        accessibilityLabel={label ?? placeholder}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={[
+          styles.input,
+          focused && styles.focused,
+          error ? styles.inputError : null,
+        ]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -56,16 +71,18 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   input: {
-    height: 48,
-    borderRadius: radii.card,
+    minHeight: 54,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     fontFamily: typography.family.regular,
     fontSize: typography.size.body,
     color: colors.textStrong,
   },
+  focused: { borderColor: colors.blue, backgroundColor: colors.blueSoft },
   inputError: {
     borderColor: colors.feedback.canceled,
   },

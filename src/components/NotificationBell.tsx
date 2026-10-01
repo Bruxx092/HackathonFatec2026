@@ -15,7 +15,9 @@ export function NotificationBell() {
 
   useFocusEffect(
     useCallback(() => {
-      contarNaoLidos({ curso: usuario.curso, turma: "dsm-3-tarde" }).then(setNaoLidos);
+      contarNaoLidos({ curso: usuario.curso, turma: "dsm-3-tarde" }).then(
+        setNaoLidos,
+      );
     }, []),
   );
 
@@ -40,7 +42,13 @@ export function NotificationBell() {
 const styles = StyleSheet.create({
   container: {
     marginRight: 12,
-    padding: 4,
+    padding: 10,
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface,
   },
   badge: {
     position: "absolute",

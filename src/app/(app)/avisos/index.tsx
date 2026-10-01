@@ -1,115 +1,121 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
-
-import { BadgeOficial, Card } from "@/components";
-import { listarAvisos, marcarTodosComoLidos, type AvisoFiltro } from "@/services/avisos";
-import { colors, radii, typography } from "@/theme";
+import { EmptyState, PageHeader, Screen } from "@/components";
+import { NoticeCard } from "@/components/NoticeCard";
+import {
+  listarAvisos,
+  marcarTodosComoLidos,
+  type AvisoFiltro,
+} from "@/services/avisos";
+import { colors, typography } from "@/theme";
 import type { Aviso } from "@/types";
-
 const filtros: { chave: AvisoFiltro; label: string }[] = [
   { chave: "todos", label: "Todos" },
   { chave: "meu-curso", label: "Meu curso" },
   { chave: "minha-turma", label: "Minha turma" },
   { chave: "institucional", label: "Institucional" },
 ];
-
-const contexto = { curso: "Desenvolvimento de Software Multiplataforma", turma: "dsm-3-tarde" };
-
+const contexto = {
+  curso: "Desenvolvimento de Software Multiplataforma",
+  turma: "dsm-3-tarde",
+};
 export default function Avisos() {
   const router = useRouter();
   const [filtro, setFiltro] = useState<AvisoFiltro>("todos");
   const [avisos, setAvisos] = useState<Aviso[]>([]);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   useEffect(() => {
-    listarAvisos(filtro, contexto).then(setAvisos);
+    let active = true;
+    setLoading(true);
+    setError(false);
+    listarAvisos(filtro, contexto)
+      .then((a) => {
+        if (active) setAvisos(a);
+      })
+      .catch(() => {
+        if (active) setError(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [filtro]);
-
   useEffect(() => {
     marcarTodosComoLidos();
   }, []);
-
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtros}>
+    <Screen>
+      <PageHeader
+        eyebrow="Comunicação da sua Fatec"
+        title="Mural de avisos"
+        description="Informações importantes, direto de quem faz parte da sua rotina."
+      />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={s.filters}
+        contentContainerStyle={s.gap}
+      >
         {filtros.map((item) => (
           <Pressable
             key={item.chave}
+            accessibilityRole="button"
+            accessibilityState={{ selected: filtro === item.chave }}
             onPress={() => setFiltro(item.chave)}
-            style={[styles.chip, filtro === item.chave && styles.chipAtivo]}
+            style={[s.chip, filtro === item.chave && s.active]}
           >
-            <Text style={[styles.chipLabel, filtro === item.chave && styles.chipLabelAtivo]}>
+            <Text style={[s.label, filtro === item.chave && s.selected]}>
               {item.label}
             </Text>
           </Pressable>
         ))}
       </ScrollView>
-
-      {avisos.map((aviso) => (
-        <Pressable key={aviso.id} onPress={() => router.push(`/avisos/${aviso.id}`)}>
-          <Card>
-            {aviso.origem !== "professor" ? <BadgeOficial /> : null}
-            <Text style={styles.titulo}>{aviso.titulo}</Text>
-            <Text style={styles.texto} numberOfLines={2}>
-              {aviso.mensagem}
-            </Text>
-            <Text style={styles.meta}>
-              {aviso.autor} · {aviso.categoria}
-            </Text>
-          </Card>
-        </Pressable>
-      ))}
-    </ScrollView>
+      {loading ? (
+        <EmptyState title="Carregando avisos…" loading />
+      ) : error ? (
+        <EmptyState
+          title="Não foi possível carregar os avisos"
+          message="Escolha um filtro para tentar novamente."
+        />
+      ) : avisos.length ? (
+        avisos.map((aviso) => (
+          <NoticeCard
+            key={aviso.id}
+            aviso={aviso}
+            onPress={() => router.push(("/avisos/" + aviso.id) as never)}
+          />
+        ))
+      ) : (
+        <EmptyState
+          title="Tudo em dia por aqui"
+          message="Nenhum comunicado disponível neste filtro."
+        />
+      )}
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: 16,
-  },
-  filtros: {
-    marginBottom: 12,
-  },
+const s = StyleSheet.create({
+  filters: { flexGrow: 0, marginBottom: 24 },
+  gap: { gap: 8 },
   chip: {
-    borderRadius: radii.pill,
+    backgroundColor: colors.background,
+    minHeight: 44,
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
   },
-  chipAtivo: {
-    backgroundColor: colors.brand,
-    borderColor: colors.brand,
-  },
-  chipLabel: {
+  active: { backgroundColor: colors.blue, borderColor: colors.blue },
+  label: {
     fontFamily: typography.family.semibold,
-    fontSize: typography.size.caption,
+    fontSize: 12,
     color: colors.text,
   },
-  chipLabelAtivo: {
-    color: colors.background,
-  },
-  titulo: {
-    fontFamily: typography.family.semibold,
-    fontSize: typography.size.subtitle,
-    color: colors.textStrong,
-    marginTop: 8,
-  },
-  texto: {
-    fontFamily: typography.family.regular,
-    fontSize: typography.size.body,
-    color: colors.text,
-    marginTop: 4,
-  },
-  meta: {
-    fontFamily: typography.family.regular,
-    fontSize: typography.size.caption,
-    color: colors.text,
-    marginTop: 8,
-  },
+  selected: { color: colors.background },
 });

@@ -1,77 +1,127 @@
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text } from "react-native";
-
-import { BadgeOficial } from "@/components";
+import { StyleSheet, Text, View } from "react-native";
+import {
+  BadgeOficial,
+  Card,
+  EmptyState,
+  IconTile,
+  Screen,
+  pageStyles as p,
+} from "@/components";
 import { obterAviso } from "@/services/avisos";
 import { colors, typography } from "@/theme";
 import type { Aviso } from "@/types";
-
 export default function DetalheAviso() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [aviso, setAviso] = useState<Aviso | undefined>();
-
+  const [aviso, setAviso] = useState<Aviso>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   useEffect(() => {
-    if (id) {
-      obterAviso(id).then(setAviso);
+    let active = true;
+    setLoading(true);
+    setError(false);
+    setAviso(undefined);
+    if (!id) {
+      setLoading(false);
+      return;
     }
+    obterAviso(id)
+      .then((a) => {
+        if (active) setAviso(a);
+      })
+      .catch(() => {
+        if (active) setError(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [id]);
-
-  if (!aviso) {
+  if (loading)
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <Text style={styles.texto}>Carregando aviso...</Text>
-      </ScrollView>
+      <Screen>
+        <EmptyState title="Carregando aviso…" loading />
+      </Screen>
     );
-  }
-
+  if (!aviso)
+    return (
+      <Screen>
+        <EmptyState
+          title={
+            error ? "Não foi possível abrir o aviso" : "Aviso não encontrado"
+          }
+          message="Volte ao mural e selecione outro comunicado."
+        />
+      </Screen>
+    );
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {aviso.origem !== "professor" ? <BadgeOficial /> : null}
-      <Text style={styles.titulo}>{aviso.titulo}</Text>
-      <Text style={styles.meta}>
-        {aviso.autor} · {aviso.categoria} ·{" "}
-        {new Date(aviso.dataPublicacao).toLocaleDateString("pt-BR")}
-      </Text>
-      <Text style={styles.texto}>{aviso.mensagem}</Text>
-      <Text style={styles.publico}>
-        Público-alvo: {aviso.turma ?? aviso.curso ?? "Todos os estudantes"}
-      </Text>
-    </ScrollView>
+    <Screen style={s.content}>
+      <Card>
+        <View style={s.top}>
+          {aviso.origem !== "professor" && <BadgeOficial />}
+          <Text style={p.label}>{aviso.categoria.toUpperCase()}</Text>
+        </View>
+        <Text accessibilityRole="header" style={s.title}>
+          {aviso.titulo}
+        </Text>
+        <View style={[p.row, s.author]}>
+          <IconTile name="person-outline" />
+          <View style={p.grow}>
+            <Text style={p.title}>{aviso.autor}</Text>
+            <Text style={p.meta}>
+              {new Date(aviso.dataPublicacao).toLocaleDateString("pt-BR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </Text>
+          </View>
+        </View>
+        <View style={p.divider} />
+        <Text selectable style={s.body}>
+          {aviso.mensagem}
+        </Text>
+        <View style={s.audience}>
+          <Text style={p.label}>PARA QUEM É ESTE AVISO</Text>
+          <Text style={p.body}>
+            {aviso.turma ?? aviso.curso ?? "Todos os estudantes"}
+          </Text>
+        </View>
+      </Card>
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
+const s = StyleSheet.create({
+  content: { maxWidth: 880 },
+  top: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: 12,
   },
-  content: {
-    padding: 16,
-  },
-  titulo: {
+  title: {
     fontFamily: typography.family.extrabold,
-    fontSize: typography.size.title,
+    fontSize: 28,
+    lineHeight: 38,
     color: colors.textStrong,
-    marginTop: 8,
-  },
-  meta: {
-    fontFamily: typography.family.regular,
-    fontSize: typography.size.caption,
-    color: colors.text,
-    marginTop: 4,
-  },
-  texto: {
-    fontFamily: typography.family.regular,
-    fontSize: typography.size.subtitle,
-    lineHeight: 24,
-    color: colors.textStrong,
-    marginTop: 16,
-  },
-  publico: {
-    fontFamily: typography.family.regular,
-    fontSize: typography.size.body,
-    color: colors.text,
     marginTop: 24,
+    letterSpacing: -0.5,
+  },
+  author: { marginTop: 24 },
+  body: {
+    fontFamily: typography.family.regular,
+    fontSize: 16,
+    lineHeight: 29,
+    color: colors.textStrong,
+  },
+  audience: {
+    marginTop: 32,
+    padding: 20,
+    backgroundColor: colors.blueSoft,
+    borderRadius: 20,
+    gap: 8,
   },
 });

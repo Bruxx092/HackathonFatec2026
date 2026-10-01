@@ -1,6 +1,19 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import { escalasTexto, filtrosDaltonismo, useAcessibilidade } from "@/services/acessibilidade";
+import {
+  escalasTexto,
+  filtrosDaltonismo,
+  useAcessibilidade,
+} from "@/services/acessibilidade";
 import { colors, radii, shadows, typography } from "@/theme";
 
 interface Props {
@@ -9,26 +22,73 @@ interface Props {
 }
 
 export function AccessibilitySheet({ visivel, aoFechar }: Props) {
-  const { filtro, escalaTexto, definirFiltro, definirEscalaTexto } = useAcessibilidade();
+  const insets = useSafeAreaInsets();
+  const { filtro, escalaTexto, definirFiltro, definirEscalaTexto } =
+    useAcessibilidade();
 
   return (
-    <Modal visible={visivel} transparent animationType="slide" onRequestClose={aoFechar}>
+    <Modal
+      visible={visivel}
+      transparent
+      animationType="slide"
+      onRequestClose={aoFechar}
+    >
       <View style={styles.container}>
-        <Pressable style={styles.fundo} onPress={aoFechar} accessibilityLabel="Fechar" />
-        <View style={styles.painel}>
+        <Pressable
+          style={styles.fundo}
+          onPress={aoFechar}
+          accessibilityLabel="Fechar"
+        />
+        <View
+          accessibilityViewIsModal
+          style={[
+            styles.painel,
+            { paddingBottom: Math.max(24, insets.bottom) },
+          ]}
+        >
           <View style={styles.alca} />
-          <Text style={styles.titulo}>Acessibilidade</Text>
-          <ScrollView style={styles.rolagem} contentContainerStyle={styles.rolagemConteudo}>
+          <View style={styles.cabecalho}>
+            <View style={{ flex: 1 }}>
+              <Text accessibilityRole="header" style={styles.titulo}>
+                Do seu jeito
+              </Text>
+              <Text style={styles.descricao}>
+                Personalize sua experiência de leitura.
+              </Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Fechar acessibilidade"
+              onPress={aoFechar}
+              style={styles.fechar}
+            >
+              <Ionicons name="close" size={22} color={colors.blue} />
+            </Pressable>
+          </View>
+          <ScrollView
+            style={styles.rolagem}
+            contentContainerStyle={styles.rolagemConteudo}
+          >
             <Text style={styles.subtitulo}>Filtro de daltonismo</Text>
             <View style={styles.chips}>
               {filtrosDaltonismo.map((opcao) => (
                 <Pressable
                   key={opcao.valor}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: filtro === opcao.valor }}
                   onPress={() => definirFiltro(opcao.valor)}
-                  style={[styles.chip, filtro === opcao.valor && styles.chipAtivo]}
+                  style={[
+                    styles.chip,
+                    filtro === opcao.valor && styles.chipAtivo,
+                  ]}
                   testID={`filtro-${opcao.valor}`}
                 >
-                  <Text style={[styles.chipTexto, filtro === opcao.valor && styles.chipTextoAtivo]}>
+                  <Text
+                    style={[
+                      styles.chipTexto,
+                      filtro === opcao.valor && styles.chipTextoAtivo,
+                    ]}
+                  >
                     {opcao.rotulo}
                   </Text>
                 </Pressable>
@@ -40,12 +100,20 @@ export function AccessibilitySheet({ visivel, aoFechar }: Props) {
               {escalasTexto.map((opcao) => (
                 <Pressable
                   key={opcao.valor}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: escalaTexto === opcao.valor }}
                   onPress={() => definirEscalaTexto(opcao.valor)}
-                  style={[styles.chip, escalaTexto === opcao.valor && styles.chipAtivo]}
+                  style={[
+                    styles.chip,
+                    escalaTexto === opcao.valor && styles.chipAtivo,
+                  ]}
                   testID={`texto-${opcao.valor}`}
                 >
                   <Text
-                    style={[styles.chipTexto, escalaTexto === opcao.valor && styles.chipTextoAtivo]}
+                    style={[
+                      styles.chipTexto,
+                      escalaTexto === opcao.valor && styles.chipTextoAtivo,
+                    ]}
                   >
                     {opcao.rotulo}
                   </Text>
@@ -54,7 +122,8 @@ export function AccessibilitySheet({ visivel, aoFechar }: Props) {
             </View>
 
             <Text style={styles.nota}>
-              Os filtros seguem o padrão de acessibilidade do site oficial do CPS.
+              Os filtros seguem o padrão de acessibilidade do site oficial do
+              CPS.
             </Text>
           </ScrollView>
         </View>
@@ -64,6 +133,27 @@ export function AccessibilitySheet({ visivel, aoFechar }: Props) {
 }
 
 const styles = StyleSheet.create({
+  cabecalho: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    marginBottom: 12,
+  },
+  fechar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.blueSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  descricao: {
+    fontFamily: typography.family.regular,
+    fontSize: 13,
+    lineHeight: 21,
+    color: colors.text,
+    marginTop: 8,
+  },
   container: {
     flex: 1,
     justifyContent: "flex-end",
@@ -80,7 +170,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderTopLeftRadius: radii.card,
     borderTopRightRadius: radii.card,
-    paddingHorizontal: 20,
+    width: "100%",
+    maxWidth: 640,
+    alignSelf: "center",
+    paddingHorizontal: 24,
     paddingTop: 12,
     paddingBottom: 24,
     maxHeight: "85%",
@@ -121,7 +214,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    minHeight: 44,
+    justifyContent: "center",
+    paddingVertical: 12,
     marginRight: 8,
     marginBottom: 8,
   },

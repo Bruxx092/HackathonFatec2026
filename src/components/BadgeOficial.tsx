@@ -16,12 +16,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand,
     borderRadius: radii.pill,
     paddingHorizontal: 10,
-    paddingVertical: 2,
+    paddingVertical: 5,
   },
   text: {
     color: colors.background,
     fontFamily: typography.family.extrabold,
-    fontSize: typography.size.caption,
+    fontSize: 10,
     letterSpacing: 1,
   },
 });

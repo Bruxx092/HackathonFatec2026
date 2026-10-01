@@ -1,5 +1,8 @@
 export const colors = {
   brand: "#B20000",
+  brandSoft: "#FFF1F1",
+  blueSoft: "#EDF5F6",
+  canvas: "#F4F5F7",
   brandDark: "#7E0000",
   blue: "#005C6D",
   blueDark: "#004854",
@@ -46,9 +49,9 @@ export const radii = {
 export const shadows = {
   box1: {
     shadowColor: "#000000",
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.04,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 5 },
     elevation: 2,
   },
   box2: {

@@ -1,9 +1,6 @@
 import { Pressable, StyleSheet, Text } from "react-native";
-
 import { colors, radii, typography } from "@/theme";
-
 type Variant = "primary" | "secondary" | "outline";
-
 interface Props {
   label: string;
   onPress?: () => void;
@@ -11,57 +8,69 @@ interface Props {
   disabled?: boolean;
   testID?: string;
 }
-
-export function Button({ label, onPress, variant = "primary", disabled, testID }: Props) {
+export function Button({
+  label,
+  onPress,
+  variant = "primary",
+  disabled,
+  testID,
+}: Props) {
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled }}
       testID={testID}
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [
-        styles.base,
-        styles[variant],
-        pressed && styles.pressed,
-        disabled && styles.disabled,
+        s.base,
+        s[variant],
+        pressed &&
+          s[
+            variant === "outline"
+              ? "outlinePressed"
+              : variant === "secondary"
+                ? "secondaryPressed"
+                : "primaryPressed"
+          ],
+        disabled && s.disabled,
       ]}
     >
-      <Text style={[styles.label, variant === "outline" && styles.outlineLabel]}>{label}</Text>
+      <Text style={[s.label, variant === "outline" && s.outlineLabel]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   base: {
-    height: 48,
-    borderRadius: radii.pill,
+    minHeight: 52,
+    borderRadius: radii.card,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
+    paddingVertical: 14,
   },
-  primary: {
-    backgroundColor: colors.brand,
-  },
-  secondary: {
-    backgroundColor: colors.blue,
-  },
+  primary: { backgroundColor: colors.brand },
+  secondary: { backgroundColor: colors.blue },
   outline: {
     backgroundColor: colors.background,
-    borderWidth: 2,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  primaryPressed: { backgroundColor: colors.brandDark },
+  secondaryPressed: { backgroundColor: colors.blueDark },
+  outlinePressed: {
+    backgroundColor: colors.blueSoft,
     borderColor: colors.blue,
   },
-  pressed: {
-    backgroundColor: colors.brandDark,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
+  disabled: { opacity: 0.5 },
   label: {
-    color: colors.background,
     fontFamily: typography.family.semibold,
-    fontSize: typography.size.subtitle,
+    fontSize: 14,
+    color: colors.background,
+    textAlign: "center",
+    lineHeight: 21,
   },
-  outlineLabel: {
-    color: colors.blue,
-  },
+  outlineLabel: { color: colors.blue },
 });

@@ -1,82 +1,121 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-
+import { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import {
+  Card,
+  EmptyState,
+  Input,
+  PageHeader,
+  Screen,
+  pageStyles as p,
+} from "@/components";
 import { obterConversaComPessoa } from "@/services/conversas";
 import { usuariosMock } from "@/services/mocks/usuarios";
-import { colors, radii, typography } from "@/theme";
-
+import { colors, typography } from "@/theme";
 const usuario = usuariosMock[0];
-const pessoas = usuariosMock.filter((pessoa) => pessoa.id !== usuario.id);
-
+const pessoas = usuariosMock.filter((p) => p.id !== usuario.id);
 export default function NovaConversa() {
   const router = useRouter();
-
-  async function abrir(pessoaId: string) {
-    const conversa = await obterConversaComPessoa(pessoaId, usuario.id);
-    if (conversa) {
-      router.replace(`/fala-fatec/${conversa.id}`);
+  const [busca, setBusca] = useState("");
+  const [abrindo, setAbrindo] = useState<string | null>(null);
+  const [erro, setErro] = useState("");
+  async function abrir(id: string) {
+    if (abrindo) return;
+    setAbrindo(id);
+    setErro("");
+    try {
+      const conversa = await obterConversaComPessoa(id, usuario.id);
+      if (conversa) router.replace(("/fala-fatec/" + conversa.id) as never);
+      else setErro("Não foi possível abrir esta conversa.");
+    } catch {
+      setErro("Não foi possível abrir a conversa. Tente novamente.");
+    } finally {
+      setAbrindo(null);
     }
   }
-
+  const visiveis = pessoas.filter((p) =>
+    (p.nome + " " + p.email)
+      .toLocaleLowerCase()
+      .includes(busca.toLocaleLowerCase().trim()),
+  );
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.secao}>Escolha uma pessoa</Text>
-      {pessoas.map((pessoa) => (
-        <Pressable key={pessoa.id} onPress={() => abrir(pessoa.id)} style={styles.linha}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={18} color={colors.background} />
+    <Screen>
+      <PageHeader
+        eyebrow="Novas conexões"
+        title="Vamos conversar?"
+        description="Encontre uma pessoa da comunidade e comece uma conversa."
+      />
+      <Input
+        value={busca}
+        onChangeText={setBusca}
+        label="Buscar na comunidade"
+        placeholder="Nome ou e-mail"
+        autoCapitalize="none"
+      />
+      {erro && (
+        <Text accessibilityRole="alert" style={s.error}>
+          {erro}
+        </Text>
+      )}
+      {visiveis.map((pessoa) => (
+        <Card
+          key={pessoa.id}
+          onPress={() => abrir(pessoa.id)}
+          accessibilityLabel={"Conversar com " + pessoa.nome}
+        >
+          <View style={p.row}>
+            <View style={s.avatar}>
+              <Text style={s.initial}>
+                {pessoa.nome.replace(/^(Prof\.|Coord\.)\s*/, "")[0]}
+              </Text>
+            </View>
+            <View style={p.grow}>
+              <Text style={p.title}>{pessoa.nome}</Text>
+              <Text style={p.meta}>{pessoa.email}</Text>
+              <Text style={s.role}>
+                {abrindo === pessoa.id
+                  ? "Abrindo conversa…"
+                  : pessoa.tipoUsuario}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.blue} />
           </View>
-          <View>
-            <Text style={styles.nome}>{pessoa.nome}</Text>
-            <Text style={styles.email}>{pessoa.email}</Text>
-          </View>
-        </Pressable>
+        </Card>
       ))}
-    </ScrollView>
+      {!visiveis.length && (
+        <EmptyState
+          title="Nenhuma pessoa encontrada"
+          message="Tente outro nome ou e-mail."
+        />
+      )}
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: 16,
-  },
-  secao: {
-    fontFamily: typography.family.extrabold,
-    fontSize: typography.size.subtitle,
-    color: colors.text,
-    marginBottom: 12,
-  },
-  linha: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.surface,
-    borderRadius: radii.card,
-    padding: 12,
-    marginBottom: 8,
-  },
+const s = StyleSheet.create({
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.blue,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.blueSoft,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
   },
-  nome: {
+  initial: {
+    fontFamily: typography.family.extrabold,
+    fontSize: 20,
+    color: colors.blue,
+  },
+  role: {
     fontFamily: typography.family.semibold,
-    fontSize: typography.size.body,
-    color: colors.textStrong,
+    fontSize: 11,
+    color: colors.blue,
+    marginTop: 6,
   },
-  email: {
+  error: {
     fontFamily: typography.family.regular,
-    fontSize: typography.size.caption,
-    color: colors.text,
-    marginTop: 2,
+    fontSize: 14,
+    color: colors.feedback.canceled,
+    marginBottom: 16,
   },
 });

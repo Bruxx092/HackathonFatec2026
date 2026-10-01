@@ -32,6 +32,8 @@ export default function Conversa() {
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [texto, setTexto] = useState("");
   const [digitando, setDigitando] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -46,14 +48,27 @@ export default function Conversa() {
     if (!id || !conteudo) {
       return;
     }
-    setTexto("");
-    const enviada = await enviarMensagem(id, usuario.id, conteudo);
-    setMensagens((atual) => [...atual, enviada]);
-    setDigitando(true);
-    const resposta = await responderAutomatico(id);
-    setDigitando(false);
-    if (resposta) {
-      setMensagens((atual) => [...atual, resposta]);
+    if (enviando || digitando) return;
+    setEnviando(true);
+    setErro("");
+    let enviadaComSucesso = false;
+    try {
+      const enviada = await enviarMensagem(id, usuario.id, conteudo);
+      enviadaComSucesso = true;
+      setTexto("");
+      setMensagens((atual) => [...atual, enviada]);
+      setDigitando(true);
+      const resposta = await responderAutomatico(id);
+      if (resposta) setMensagens((atual) => [...atual, resposta]);
+    } catch {
+      setErro(
+        enviadaComSucesso
+          ? "Mensagem enviada. Não foi possível carregar a resposta automática."
+          : "Não foi possível enviar. Sua mensagem foi mantida para tentar novamente.",
+      );
+    } finally {
+      setEnviando(false);
+      setDigitando(false);
     }
   }
 
@@ -64,12 +79,23 @@ export default function Conversa() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 96 : 0}
     >
       <Stack.Screen options={{ title: conversa?.nome ?? "Conversa" }} />
+      <View style={styles.contexto}>
+        <Ionicons name="chatbubbles-outline" size={18} color={colors.blue} />
+        <Text style={styles.contextoTexto}>
+          {conversa?.tipo === "canal"
+            ? "Canal da comunidade"
+            : "Conversa direta"}{" "}
+          · Fala Fatec
+        </Text>
+      </View>
       <FlatList
         ref={listaRef}
         data={mensagens}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.lista}
-        onContentSizeChange={() => listaRef.current?.scrollToEnd({ animated: true })}
+        onContentSizeChange={() =>
+          listaRef.current?.scrollToEnd({ animated: true })
+        }
         ListFooterComponent={
           digitando ? <Text style={styles.digitando}>digitando...</Text> : null
         }
@@ -77,11 +103,20 @@ export default function Conversa() {
           const minha = item.autorId === usuario.id;
           return (
             <View style={[styles.linha, minha ? styles.linhaMinha : null]}>
-              <View style={[styles.balao, minha ? styles.balaoMeu : styles.balaoDeles]}>
+              <View
+                style={[
+                  styles.balao,
+                  minha ? styles.balaoMeu : styles.balaoDeles,
+                ]}
+              >
                 {minha ? null : (
-                  <Text style={styles.autor}>{nomesAutores[item.autorId] ?? item.autorId}</Text>
+                  <Text style={styles.autor}>
+                    {nomesAutores[item.autorId] ?? item.autorId}
+                  </Text>
                 )}
-                <Text style={[styles.texto, minha ? styles.textoMeu : null]}>{item.texto}</Text>
+                <Text style={[styles.texto, minha ? styles.textoMeu : null]}>
+                  {item.texto}
+                </Text>
                 <Text style={[styles.hora, minha ? styles.horaMeu : null]}>
                   {new Date(item.enviadaEm).toLocaleTimeString("pt-BR", {
                     hour: "2-digit",
@@ -93,6 +128,11 @@ export default function Conversa() {
           );
         }}
       />
+      {erro ? (
+        <Text accessibilityRole="alert" style={styles.erro}>
+          {erro}
+        </Text>
+      ) : null}
       <View style={styles.composer}>
         <TextInput
           style={styles.input}
@@ -101,6 +141,8 @@ export default function Conversa() {
           placeholder="Escreva uma mensagem"
           placeholderTextColor={colors.text}
           multiline
+          accessibilityLabel="Mensagem"
+          editable={!enviando}
           testID="chat-input"
         />
         <Pressable
@@ -108,7 +150,14 @@ export default function Conversa() {
           accessibilityLabel="Enviar"
           testID="chat-enviar"
           onPress={handleEnviar}
-          style={styles.enviar}
+          disabled={!texto.trim() || enviando || digitando}
+          accessibilityState={{
+            disabled: !texto.trim() || enviando || digitando,
+          }}
+          style={[
+            styles.enviar,
+            (!texto.trim() || enviando || digitando) && styles.desativado,
+          ]}
         >
           <Ionicons name="send" size={20} color={colors.background} />
         </Pressable>
@@ -118,12 +167,33 @@ export default function Conversa() {
 }
 
 const styles = StyleSheet.create({
+  contexto: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    padding: 16,
+    backgroundColor: colors.blueSoft,
+  },
+  contextoTexto: {
+    fontFamily: typography.family.semibold,
+    fontSize: 12,
+    color: colors.blue,
+  },
+  erro: {
+    padding: 16,
+    color: colors.feedback.canceled,
+    fontFamily: typography.family.regular,
+  },
+  desativado: { opacity: 0.4 },
   flex: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.canvas,
   },
   lista: {
-    padding: 16,
+    padding: 24,
+    width: "100%",
+    maxWidth: 960,
+    alignSelf: "center",
   },
   linha: {
     flexDirection: "row",
@@ -135,15 +205,19 @@ const styles = StyleSheet.create({
   },
   balao: {
     maxWidth: "80%",
-    borderRadius: radii.card,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    borderRadius: 22,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
   },
   balaoMeu: {
-    backgroundColor: colors.brand,
+    backgroundColor: colors.blue,
+    borderBottomRightRadius: 6,
   },
   balaoDeles: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
+    borderBottomLeftRadius: 6,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   autor: {
     fontFamily: typography.family.semibold,
@@ -154,6 +228,7 @@ const styles = StyleSheet.create({
   texto: {
     fontFamily: typography.family.regular,
     fontSize: typography.size.body,
+    lineHeight: 22,
     color: colors.textStrong,
   },
   textoMeu: {
@@ -179,7 +254,10 @@ const styles = StyleSheet.create({
   composer: {
     flexDirection: "row",
     alignItems: "flex-end",
-    padding: 12,
+    padding: 16,
+    width: "100%",
+    maxWidth: 960,
+    alignSelf: "center",
     borderTopWidth: 1,
     borderTopColor: colors.border,
     backgroundColor: colors.background,

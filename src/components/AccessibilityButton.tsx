@@ -19,7 +19,10 @@ export function AccessibilityButton() {
       >
         <Ionicons name="accessibility" size={22} color={colors.blue} />
       </Pressable>
-      <AccessibilitySheet visivel={visivel} aoFechar={() => setVisivel(false)} />
+      <AccessibilitySheet
+        visivel={visivel}
+        aoFechar={() => setVisivel(false)}
+      />
     </>
   );
 }
@@ -27,6 +30,12 @@ export function AccessibilityButton() {
 const styles = StyleSheet.create({
   botao: {
     marginRight: 12,
-    padding: 4,
+    padding: 10,
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.surface,
   },
 });

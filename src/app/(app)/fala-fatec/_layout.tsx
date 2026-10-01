@@ -7,9 +7,13 @@ export default function FalaFatecLayout() {
   return (
     <Stack
       screenOptions={{
-        headerTitleStyle: { fontFamily: typography.family.extrabold, color: colors.textStrong },
+        headerTitleStyle: {
+          fontFamily: typography.family.extrabold,
+          color: colors.textStrong,
+        },
         headerStyle: { backgroundColor: colors.background },
-        headerTintColor: colors.brand,
+        headerTintColor: colors.blue,
+        headerShadowVisible: false,
         headerRight: () => <AccessibilityButton />,
         contentStyle: { backgroundColor: colors.background },
       }}

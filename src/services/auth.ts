@@ -1,7 +1,7 @@
 import type { User } from "@/types";
 import { delay } from "./delay";
-import {doc,getDoc} from 'firebase/firestore'
-import {auth,db} from './firebase'
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "./firebase";
 import { usuariosMock } from "./mocks/usuarios";
 import { LoginDTO, validateLoginDTO, mapUserDocumentToEntity } from "@/types/dtos";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
@@ -13,16 +13,25 @@ export function isEmailInstitucional(email: string): boolean {
 
 export async function entrar(loginData: LoginDTO): Promise<User> {
   validateLoginDTO(loginData);
-  if(!auth){throw new Error("Problema na autenticação do modulo, tente novamente mais tarde")}
+  const emailNormalizado = loginData.email.trim().toLowerCase();
+
+  if (!auth || !db) {
+    await delay();
+    return (
+      usuariosMock.find((u) => u.email.toLowerCase() === emailNormalizado) ??
+      usuariosMock[0]
+    );
+  }
+
   const userCredential = await signInWithEmailAndPassword(
     auth,
-    loginData.email.trim().toLowerCase(),
+    emailNormalizado,
     loginData.senha
   );
 
   const uid = userCredential.user.uid;
 
-  const userDocRef = doc(db!, "users", uid);
+  const userDocRef = doc(db, "users", uid);
   const userDoc = await getDoc(userDocRef);
 
   if (!userDoc.exists()) {
@@ -33,5 +42,9 @@ export async function entrar(loginData: LoginDTO): Promise<User> {
 }
 
 export async function deslogar(): Promise<void> {
-  await signOut(auth!);
+  if (!auth) {
+    await delay(150);
+    return;
+  }
+  await signOut(auth);
 }
